@@ -3,29 +3,32 @@ const idNormalizer = require('../../core/normalizer/idNormalizer')('id');
 const normalizePositiveNumberCallback = require('../../core/normalizer/normalizePositiveNumberCallback');
 const { listNormalizer } = require('../../core/normalizer/listNormalizer');
 
-const canchaModel = {
-    nombre: 'string',
-    precio_por_hora: 'number',
-    estado: 'string',
-    tipo_id: 'number',
-};
-
-const canchaCallbacks = {
-    precio_por_hora: (_rawValue, normalizedValue) => Number(normalizedValue.toFixed(2)),
-    estado: (_rawValue, normalizedValue) => normalizedValue.toLowerCase(),
-    tipo_id: normalizePositiveNumberCallback,
-};
-
-const canchasNormalizer = new Normalizer(
-    'canchasNormalizer',
-    canchaModel,
-    canchaCallbacks
+const horariosNormalizer = new Normalizer(
+    'horariosNormalizer',
+    {
+        cancha_id: 'number',
+        fecha: 'date',
+        hora_inicio: 'time',
+        hora_fin: 'time',
+        disponible: 'boolean',
+    },
+    {
+        cancha_id: normalizePositiveNumberCallback,
+    }
 );
 
-const canchasPatchNormalizer = new Normalizer(
-    'canchasPatchNormalizer',
-    canchaModel,
-    canchaCallbacks,
+const horariosPatchNormalizer = new Normalizer(
+    'horariosPatchNormalizer',
+    {
+        cancha_id: 'number',
+        fecha: 'date',
+        hora_inicio: 'time',
+        hora_fin: 'time',
+        disponible: 'boolean',
+    },
+    {
+        cancha_id: normalizePositiveNumberCallback,
+    },
     {
         allowEmptyPayload: true,
     }
@@ -34,12 +37,12 @@ const canchasPatchNormalizer = new Normalizer(
 module.exports = {
     insertNormalizer: {
         body: {
-            payloadNormalizer: canchasNormalizer,
+            payloadNormalizer: horariosNormalizer,
         },
     },
     updateNormalizer: {
         body: {
-            payloadNormalizer: canchasPatchNormalizer,
+            payloadNormalizer: horariosPatchNormalizer,
         },
         params: {
             payloadNormalizer: idNormalizer,
@@ -60,5 +63,4 @@ module.exports = {
             payloadNormalizer: listNormalizer,
         },
     },
-    Normalizer,
 };

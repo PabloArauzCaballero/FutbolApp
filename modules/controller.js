@@ -176,10 +176,23 @@ function getController(moduleName, validator, normalizer) {
                 });
             }
 
+            const paramsResultValues = Object.params(paramsResult.data);
+
+            if(paramsResultValues.length == 0){
+                throw new Error("No se recibio ningun ID.");
+            }
+
+            if(paramsResultValues.length > 1){
+                throw new Error("Se recibió más de un ID en params para modificar. Asegúrese de que la ruta solo contenga un ID.");
+            }
+
+            const id = paramsResultValues[0];
+
             const updatedInstance = await service.modificar(
+                id,
                 bodyResult.data,
-                paramsResult.data
             );
+
 
             if (!updatedInstance) {
                 logError(req, {
@@ -265,7 +278,22 @@ function getController(moduleName, validator, normalizer) {
                 });
             }
 
-            const deletedInstance = await service.eliminar(paramsResult.data);
+
+            const paramsResultValues = Object.params(paramsResult.data);
+
+            if(paramsResultValues.length == 0){
+                throw new Error("No se recibio ningun ID.");
+            }
+
+            if(paramsResultValues.length > 1){
+                throw new Error("Se recibió más de un ID en params para modificar. Asegúrese de que la ruta solo contenga un ID.");
+            }
+
+            const id = paramsResultValues[0];
+
+            const deletedInstance = await service.eliminar(
+                id
+            );
 
             if (!deletedInstance) {
                 logError(req, {
@@ -382,8 +410,20 @@ function getController(moduleName, validator, normalizer) {
                 });
             }
 
+            const paramsResultValues = Object.params(paramsResult.data);
+
+            if(paramsResultValues.length == 0){
+                throw new Error("No se recibio ningun ID.");
+            }
+
+            if(paramsResultValues.length > 1){
+                throw new Error("Se recibió más de un ID en params para modificar. Asegúrese de que la ruta solo contenga un ID.");
+            }
+
+            const id = paramsResultValues[0];
+
             const instance = await service.obtener(
-                paramsResult.data,
+                id,
                 queryResult.data
             );
 

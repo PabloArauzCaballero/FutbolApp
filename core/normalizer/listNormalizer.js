@@ -1,10 +1,15 @@
-const Normalizer = require('../../core/normalizer/normalizer');
+const Normalizer = require('./normalizer');
 
 const listNormalizer = new Normalizer(
-    "listNormalizer",
+    'listNormalizer',
     {
-        offset: "number",
-        limit: "number"
+        offset: 'number',
+        limit: 'number',
+    },
+    {},
+    {
+        allowEmptyPayload: true,
+        unknownFieldsPolicy: 'strip',
     }
 );
 

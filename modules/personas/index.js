@@ -1,6 +1,6 @@
-const router = require("./personas.routes");
+const router = require('./personas.routes');
 
 module.exports = {
-    basePath: "/personas",
+    basePath: '/personas',
     router,
-}
+};

@@ -1,14 +1,24 @@
-function processTarget(target, payloadNormalizer, payloadValidator, normalize, validate) {
+const { normalize: defaultNormalize } = require('../normalizer/normalizeTarget');
+const { validate: defaultValidate } = require('../validator/validateTarget');
+
+function processTarget(
+    target,
+    payloadNormalizer,
+    payloadValidator,
+    normalize = defaultNormalize,
+    validate = defaultValidate
+) {
     let normalizedData = target;
 
     if (payloadNormalizer) {
         const normalizeResult = normalize(target, payloadNormalizer);
-        
+
         if (!normalizeResult.ok) {
             return {
                 ok: false,
-                stage: "normalization",
+                stage: 'normalization',
                 message: normalizeResult.message,
+                errors: normalizeResult.errors || [],
             };
         }
 
@@ -21,18 +31,22 @@ function processTarget(target, payloadNormalizer, payloadValidator, normalize, v
         if (!validateResult.ok) {
             return {
                 ok: false,
-                stage: "validation",
+                stage: 'validation',
                 message: validateResult.message,
+                errors: validateResult.errors || [],
             };
         }
     }
 
     return {
         ok: true,
+        stage: null,
+        message: null,
         data: normalizedData,
+        errors: [],
     };
 }
 
 module.exports = {
     processTarget,
-}
+};

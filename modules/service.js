@@ -1,12 +1,18 @@
-function getService(moduleName){
+function getService(moduleName) {
     const repository = require('./repository')(moduleName);
 
     async function crear(payload) {
         return repository.crear(payload);
     }
 
-    async function modificar(id, payload) {
-        return repository.modificar(id, payload);
+    async function modificar(payloadOrId, paramsOrPayload = {}) {
+        if (typeof payloadOrId === 'number') {
+            return repository.modificar(payloadOrId, paramsOrPayload);
+        }
+
+        const payload = payloadOrId ?? {};
+        const params = paramsOrPayload ?? {};
+        return repository.modificar(params.id, payload);
     }
 
     async function eliminar(id) {
@@ -17,8 +23,12 @@ function getService(moduleName){
         return repository.obtenerPorId(id);
     }
 
-    async function listar(pagination) {
-        return repository.listar(pagination);
+    async function listar(params = {}, query = {}) {
+        const pagination = typeof query === 'object' && query !== null && !Array.isArray(query)
+            ? query
+            : params;
+
+        return repository.listar(pagination || {});
     }
 
     return {

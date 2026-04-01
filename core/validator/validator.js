@@ -1,138 +1,192 @@
 class Validator {
-    #VALID_TYPES = ["string", "number", "object", "date", "boolean"];
+    #VALID_TYPES = ['string', 'number', 'object', 'date', 'boolean', 'array', 'time'];
+    #UNKNOWN_FIELD_POLICIES = ['reject', 'strip', 'allow'];
 
-    #isValidString(value) {
-        return (
-            typeof value === "string" &&
-            value.trim() !== ""
-        );
+    #isNonEmptyString(value) {
+        return typeof value === 'string' && value.trim() !== '';
     }
 
-    #isValidNumber(value) {
-        return (
-            typeof value === "number" &&
-            Number.isFinite(value)
-        );
+    #isPlainObject(value) {
+        return value !== null && typeof value === 'object' && !Array.isArray(value);
     }
 
-    #isValidObject(value) {
-        return (
-            value !== null &&
-            typeof value === "object" &&
-            !Array.isArray(value) &&
-            Object.keys(value).length > 0
-        );
+    #isFiniteNumber(value) {
+        return typeof value === 'number' && Number.isFinite(value);
     }
 
-    #isValidDate(value) {
-        if (value instanceof Date) {
-            return !Number.isNaN(value.getTime());
+    #isValidDateObject(value) {
+        return value instanceof Date && !Number.isNaN(value.getTime());
+    }
+
+    #isValidTimeString(value) {
+        return typeof value === 'string' && /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))$/.test(value.trim());
+    }
+
+    #validateDateOnlyString(value) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            return false;
         }
 
-        if (this.#isValidString(value)) {
-            const parsedDate = new Date(value);
-            return !Number.isNaN(parsedDate.getTime());
-        }
+        const [year, month, day] = value.split('-').map(Number);
+        const date = new Date(Date.UTC(year, month - 1, day));
 
-        return false;
+        return (
+            date.getUTCFullYear() === year &&
+            date.getUTCMonth() === month - 1 &&
+            date.getUTCDate() === day
+        );
     }
 
-    #isValidBoolean(value) {
-        return typeof value === "boolean";
+    #validateIsoDateTimeString(value) {
+        const isoDateTimePattern =
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/;
+
+        if (!isoDateTimePattern.test(value)) {
+            return false;
+        }
+
+        return this.#isValidDateObject(new Date(value));
+    }
+
+    #buildError(message, code = 'VALIDATION_ERROR', field = null, details = null) {
+        const error = { code, message };
+
+        if (field !== null) {
+            error.field = field;
+        }
+
+        if (details !== null) {
+            error.details = details;
+        }
+
+        return error;
     }
 
     #isValidCallback(callback) {
-        return typeof callback === "function";
+        return typeof callback === 'function';
     }
 
     #validateConstructorParams(validatorName, modelObject, modelCallback, options) {
-        if (!this.#isValidString(validatorName)) {
-            throw new Error(
-                "Error: invalid input for validatorName. Expected a non-empty string."
-            );
+        if (!this.#isNonEmptyString(validatorName)) {
+            throw new Error('Error: invalid input for validatorName. Expected a non-empty string.');
         }
 
-        if (!this.#isValidObject(modelObject)) {
-            throw new Error(
-                "Error: invalid input for modelObject. Expected a non-empty plain object."
-            );
+        if (!this.#isPlainObject(modelObject) || Object.keys(modelObject).length === 0) {
+            throw new Error('Error: invalid input for modelObject. Expected a non-empty plain object.');
         }
 
-        if (
-            !this.#isValidObject(modelCallback) ||
-            !Object.values(modelCallback).every((callback) => this.#isValidCallback(callback))
-        ) {
-            throw new Error(
-                "Error: invalid input for modelCallback. Expected a non-empty object containing only valid callbacks."
-            );
+        if (modelCallback !== undefined && !this.#isPlainObject(modelCallback)) {
+            throw new Error('Error: invalid input for modelCallback. Expected a plain object.');
         }
 
-        if (
-            options !== undefined &&
-            (options === null || typeof options !== "object" || Array.isArray(options))
-        ) {
-            throw new Error(
-                "Error: invalid input for options. Expected a plain object."
-            );
-        }
-
-        const modelObjectFields = Object.keys(modelObject);
-        const modelCallbackFields = Object.keys(modelCallback);
-
-        for (const column of modelObjectFields) {
-            if (!modelCallbackFields.includes(column)) {
-                throw new Error(
-                    `Error: missing callback for field "${column}" in modelCallback. Each field in modelObject must have a corresponding callback in modelCallback.`
-                );
-            }
-        }
-
-        for (const column of modelCallbackFields) {
-            if (!modelObjectFields.includes(column)) {
-                throw new Error(
-                    `Error: unexpected callback for field "${column}" in modelCallback. Only fields present in modelObject can have callbacks in modelCallback.`
-                );
-            }
+        if (options !== undefined && !this.#isPlainObject(options)) {
+            throw new Error('Error: invalid input for options. Expected a plain object.');
         }
 
         for (const [fieldName, fieldType] of Object.entries(modelObject)) {
-            if (!this.#isValidString(fieldName)) {
-                throw new Error(
-                    `Error: invalid field name in modelObject. Received: ${fieldName}`
-                );
+            if (!this.#isNonEmptyString(fieldName)) {
+                throw new Error(`Error: invalid field name in modelObject. Received: ${fieldName}`);
             }
 
-            if (!this.#isValidString(fieldType) || !this.#VALID_TYPES.includes(fieldType)) {
+            if (!this.#isNonEmptyString(fieldType) || !this.#VALID_TYPES.includes(fieldType)) {
                 throw new Error(
-                    `Error: invalid type for field "${fieldName}". Expected one of: ${this.#VALID_TYPES.join(", ")}. Received: ${fieldType}`
+                    `Error: invalid type for field "${fieldName}". Expected one of: ${this.#VALID_TYPES.join(', ')}. Received: ${fieldType}`
                 );
             }
+        }
+
+        for (const [fieldName, callback] of Object.entries(modelCallback || {})) {
+            if (!Object.prototype.hasOwnProperty.call(modelObject, fieldName)) {
+                throw new Error(`Error: unexpected callback for field "${fieldName}" in modelCallback.`);
+            }
+
+            if (!this.#isValidCallback(callback)) {
+                throw new Error(`Error: invalid callback for field "${fieldName}" in modelCallback.`);
+            }
+        }
+
+        if (
+            options?.unknownFieldsPolicy !== undefined &&
+            !this.#UNKNOWN_FIELD_POLICIES.includes(options.unknownFieldsPolicy)
+        ) {
+            throw new Error(
+                `Error: invalid unknownFieldsPolicy. Expected one of: ${this.#UNKNOWN_FIELD_POLICIES.join(', ')}.`
+            );
         }
     }
 
     #validateType(fieldValue, expectedType) {
         switch (expectedType) {
-            case "string":
-                return this.#isValidString(fieldValue);
-
-            case "number":
-                return this.#isValidNumber(fieldValue);
-
-            case "object":
-                return this.#isValidObject(fieldValue);
-
-            case "date":
-                return this.#isValidDate(fieldValue);
-
-            case "boolean":
-                return this.#isValidBoolean(fieldValue);
-
+            case 'string':
+                return typeof fieldValue === 'string';
+            case 'number':
+                return this.#isFiniteNumber(fieldValue);
+            case 'object':
+                return this.#isPlainObject(fieldValue);
+            case 'date':
+                return (
+                    this.#isValidDateObject(fieldValue) ||
+                    (typeof fieldValue === 'string' &&
+                        (this.#validateDateOnlyString(fieldValue.trim()) ||
+                            this.#validateIsoDateTimeString(fieldValue.trim())))
+                );
+            case 'boolean':
+                return typeof fieldValue === 'boolean';
+            case 'array':
+                return Array.isArray(fieldValue);
+            case 'time':
+                return this.#isValidTimeString(fieldValue);
             default:
                 return false;
         }
     }
 
-    constructor(validatorName, modelObject, modelCallback, options = {}) {
+    #runCallback(fieldName, callback, receivedValue) {
+        try {
+            const callbackResult = callback(receivedValue, {
+                fieldName,
+                expectedType: this.modelObject[fieldName],
+                validatorName: this.validatorName,
+                options: this.options,
+            });
+
+            if (typeof callbackResult === 'boolean') {
+                return callbackResult
+                    ? { ok: true }
+                    : {
+                        ok: false,
+                        message: `Validation failed for param "${fieldName}" with value "${receivedValue}".`,
+                        code: 'CALLBACK_VALIDATION_FAILED',
+                    };
+            }
+
+            if (this.#isPlainObject(callbackResult) && typeof callbackResult.ok === 'boolean') {
+                return {
+                    ok: callbackResult.ok,
+                    message:
+                        callbackResult.message ||
+                        (callbackResult.ok
+                            ? null
+                            : `Validation failed for param "${fieldName}" with value "${receivedValue}".`),
+                    code: callbackResult.code || 'CALLBACK_VALIDATION_RESULT',
+                };
+            }
+
+            return {
+                ok: false,
+                message: `Validation callback for param "${fieldName}" must return a boolean or an object with shape { ok, message?, code? }.` ,
+                code: 'INVALID_CALLBACK_RETURN',
+            };
+        } catch (error) {
+            return {
+                ok: false,
+                message: `Validation callback for param "${fieldName}" threw an error: ${error.message}`,
+                code: 'CALLBACK_ERROR',
+            };
+        }
+    }
+
+    constructor(validatorName, modelObject, modelCallback = {}, options = {}) {
         this.#validateConstructorParams(validatorName, modelObject, modelCallback, options);
 
         this.validatorName = validatorName;
@@ -140,73 +194,153 @@ class Validator {
         this.modelCallback = Object.freeze({ ...modelCallback });
         this.options = Object.freeze({
             allowPartial: Boolean(options.allowPartial),
+            allowEmptyPayload:
+                options.allowEmptyPayload !== undefined
+                    ? Boolean(options.allowEmptyPayload)
+                    : Boolean(options.allowPartial),
+            unknownFieldsPolicy: options.unknownFieldsPolicy ?? 'reject',
+            stopAtFirstError: options.stopAtFirstError !== false,
         });
     }
 
     validateInput(payload) {
-        if (!this.#isValidObject(payload)) {
+        if (!this.#isPlainObject(payload)) {
             return {
                 status: false,
-                message: "Invalid input: payload must be a non-empty plain object."
+                message: 'Invalid input: payload must be a plain object.',
+                errors: [this.#buildError('Payload must be a plain object.', 'INVALID_PAYLOAD')],
             };
         }
 
-        const modelObjectKeys = Object.keys(this.modelObject);
-        const payloadObjectKeys = Object.keys(payload);
+        const payloadKeys = Object.keys(payload);
 
-        for (const columnName of payloadObjectKeys) {
-            if (!modelObjectKeys.includes(columnName)) {
+        if (!this.options.allowEmptyPayload && payloadKeys.length === 0) {
+            return {
+                status: false,
+                message: 'Invalid input: payload must not be empty.',
+                errors: [this.#buildError('Payload must not be empty.', 'EMPTY_PAYLOAD')],
+            };
+        }
+
+        const modelKeys = Object.keys(this.modelObject);
+        const errors = [];
+
+        for (const columnName of payloadKeys) {
+            const isKnownField = modelKeys.includes(columnName);
+
+            if (isKnownField) {
+                continue;
+            }
+
+            if (this.options.unknownFieldsPolicy === 'strip' || this.options.unknownFieldsPolicy === 'allow') {
+                continue;
+            }
+
+            errors.push(
+                this.#buildError(
+                    `Unexpected param: ${columnName}. Expected params: ${modelKeys.join(', ')}`,
+                    'UNKNOWN_FIELD',
+                    columnName
+                )
+            );
+
+            if (this.options.stopAtFirstError) {
                 return {
                     status: false,
-                    message: `Unexpected param: ${columnName}. Expected params: ${modelObjectKeys.join(", ")}`
+                    message: errors[0].message,
+                    errors,
                 };
             }
         }
 
-        for (const columnName of modelObjectKeys) {
-            const columnIsPresent = payloadObjectKeys.includes(columnName);
+        for (const columnName of modelKeys) {
+            const columnIsPresent = Object.prototype.hasOwnProperty.call(payload, columnName);
 
             if (!columnIsPresent) {
                 if (this.options.allowPartial) {
                     continue;
                 }
 
-                return {
-                    status: false,
-                    message: `Missing required param: ${columnName}.`
-                };
+                errors.push(
+                    this.#buildError(
+                        `Missing required param: ${columnName}.`,
+                        'MISSING_REQUIRED_FIELD',
+                        columnName
+                    )
+                );
+
+                if (this.options.stopAtFirstError) {
+                    return {
+                        status: false,
+                        message: errors[0].message,
+                        errors,
+                    };
+                }
+
+                continue;
             }
 
             const expectedType = this.modelObject[columnName];
             const receivedValue = payload[columnName];
 
             if (!this.#validateType(receivedValue, expectedType)) {
-                return {
-                    status: false,
-                    message: `Invalid type for param "${columnName}". Expected: ${expectedType}. Received: ${receivedValue}`
-                };
+                errors.push(
+                    this.#buildError(
+                        `Invalid type for param "${columnName}". Expected: ${expectedType}.`,
+                        'INVALID_TYPE',
+                        columnName,
+                        { receivedValue }
+                    )
+                );
+
+                if (this.options.stopAtFirstError) {
+                    return {
+                        status: false,
+                        message: errors[0].message,
+                        errors,
+                    };
+                }
+
+                continue;
             }
 
-            const callbackResult = this.modelCallback[columnName](receivedValue);
-
-            if (typeof callbackResult !== "boolean") {
-                return {
-                    status: false,
-                    message: `Validation callback for param "${columnName}" must return a boolean.`
-                };
+            if (!Object.prototype.hasOwnProperty.call(this.modelCallback, columnName)) {
+                continue;
             }
 
-            if (!callbackResult) {
-                return {
-                    status: false,
-                    message: `Validation failed for param "${columnName}" with value "${receivedValue}".`
-                };
+            const callbackResult = this.#runCallback(columnName, this.modelCallback[columnName], receivedValue);
+
+            if (!callbackResult.ok) {
+                errors.push(
+                    this.#buildError(
+                        callbackResult.message,
+                        callbackResult.code,
+                        columnName
+                    )
+                );
+
+                if (this.options.stopAtFirstError) {
+                    return {
+                        status: false,
+                        message: errors[0].message,
+                        errors,
+                    };
+                }
             }
+        }
+
+        if (errors.length > 0) {
+            return {
+                status: false,
+                message: errors[0].message,
+                errors,
+            };
         }
 
         return {
             status: true,
-            message: "Validation successful."
+            message: 'Validation successful.',
+            errors: [],
         };
     }
 }

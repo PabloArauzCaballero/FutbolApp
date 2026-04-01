@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = {
-    name: "Cancha",
+    name: "Canchas",
     attributes: {
         id: {
             type: DataTypes.INTEGER,
@@ -30,14 +30,15 @@ module.exports = {
             field: "precio_por_hora",
         },
         estado: {
-            type: DataTypes.ENUM("Activa", "Inactiva"),
+            type: DataTypes.ENUM("activa", "inactiva"),
             allowNull: false,
             field: "estado",
         },
     },
     metadata: {
-        tableName: "Cancha",
+        tableName: "Canchas",
         freezeTableName: true,
         timestamps: false,
+        underscored: false,
     },
 };

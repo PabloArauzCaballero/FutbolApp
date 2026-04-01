@@ -1,6 +1,6 @@
-const router = require("./resenas.routes");
+const router = require('./resenas.routes');
 
 module.exports = {
-    basePath: "/resenas",
+    basePath: '/resenas',
     router,
-}
+};

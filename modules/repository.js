@@ -1,24 +1,25 @@
-const { toSnakeCase } = require("../core/utils/strManagmentTool");
+const { toSnakeCase } = require('../core/utils/strManagmentTool');
 const {
     logRepoInfo,
     logRepoError,
-} = require("../logs/utilities");
+} = require('../logs/utilities');
+
 
 function getRepository(moduleName) {
-    if (typeof moduleName !== "string" || moduleName.trim() === "") {
-        throw new Error("moduleName debe ser un string no vacío.");
+    if (typeof moduleName !== 'string' || moduleName.trim() === '') {
+        throw new Error('moduleName debe ser un string no vacío.');
     }
 
-    const model = require("../modules/models")[moduleName];
+    const model = require('../modules/models')[moduleName];
 
     if (!model) {
         throw new Error(`No se encontró un model para moduleName: ${moduleName}.`);
     }
 
-    const requiredMethods = ["create", "findByPk", "findAndCountAll"];
+    const requiredMethods = ['create', 'findByPk', 'findAndCountAll'];
 
     for (const methodName of requiredMethods) {
-        if (typeof model[methodName] !== "function") {
+        if (typeof model[methodName] !== 'function') {
             throw new Error(`El model recibido no implementa ${methodName}().`);
         }
     }
@@ -31,7 +32,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_create_started`,
                 message: `Iniciando persistencia de ${moduleName}.`,
                 moduleName: modelSnakeCase,
-                action: "crear",
+                action: 'crear',
                 extraMeta: {
                     payload,
                 },
@@ -44,7 +45,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_create_success`,
                 message: `${moduleName} persistido(a) correctamente.`,
                 moduleName: modelSnakeCase,
-                action: "crear",
+                action: 'crear',
                 extraMeta: {
                     resourceId: result?.id ?? null,
                 },
@@ -56,7 +57,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_create_error`,
                 message: `Error al persistir ${moduleName}.`,
                 moduleName: modelSnakeCase,
-                action: "crear",
+                action: 'crear',
                 error,
                 extraMeta: {
                     payload,
@@ -73,7 +74,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_get_started`,
                 message: `Iniciando búsqueda de ${moduleName} por id.`,
                 moduleName: modelSnakeCase,
-                action: "obtenerPorId",
+                action: 'obtenerPorId',
                 extraMeta: {
                     resourceId: id,
                 },
@@ -86,7 +87,7 @@ function getRepository(moduleName) {
                     event: `${modelSnakeCase}_repository_get_not_found`,
                     message: `No se encontró ${moduleName} con id ${id}.`,
                     moduleName: modelSnakeCase,
-                    action: "obtenerPorId",
+                    action: 'obtenerPorId',
                     extraMeta: {
                         resourceId: id,
                     },
@@ -101,7 +102,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_get_success`,
                 message: `${moduleName} obtenido(a) correctamente.`,
                 moduleName: modelSnakeCase,
-                action: "obtenerPorId",
+                action: 'obtenerPorId',
                 extraMeta: {
                     resourceId: id,
                 },
@@ -113,7 +114,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_get_error`,
                 message: `Error al obtener ${moduleName} por id.`,
                 moduleName: modelSnakeCase,
-                action: "obtenerPorId",
+                action: 'obtenerPorId',
                 error,
                 extraMeta: {
                     resourceId: id,
@@ -124,13 +125,13 @@ function getRepository(moduleName) {
         }
     }
 
-    async function modificar(id, patch) {
+    async function modificar(id, patch = {}) {
         try {
             logRepoInfo({
                 event: `${modelSnakeCase}_repository_update_started`,
                 message: `Iniciando actualización de ${moduleName}.`,
                 moduleName: modelSnakeCase,
-                action: "modificar",
+                action: 'modificar',
                 extraMeta: {
                     resourceId: id,
                     patch,
@@ -144,7 +145,7 @@ function getRepository(moduleName) {
                     event: `${modelSnakeCase}_repository_update_not_found`,
                     message: `No se encontró ${moduleName} con id ${id}.`,
                     moduleName: modelSnakeCase,
-                    action: "modificar",
+                    action: 'modificar',
                     extraMeta: {
                         resourceId: id,
                     },
@@ -162,7 +163,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_update_success`,
                 message: `${moduleName} actualizado(a) correctamente.`,
                 moduleName: modelSnakeCase,
-                action: "modificar",
+                action: 'modificar',
                 extraMeta: {
                     resourceId: id,
                     updatedFields: Object.keys(patch ?? {}),
@@ -175,7 +176,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_update_error`,
                 message: `Error al actualizar ${moduleName}.`,
                 moduleName: modelSnakeCase,
-                action: "modificar",
+                action: 'modificar',
                 error,
                 extraMeta: {
                     resourceId: id,
@@ -193,7 +194,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_delete_started`,
                 message: `Iniciando eliminación de ${moduleName}.`,
                 moduleName: modelSnakeCase,
-                action: "eliminar",
+                action: 'eliminar',
                 extraMeta: {
                     resourceId: id,
                 },
@@ -206,7 +207,7 @@ function getRepository(moduleName) {
                     event: `${modelSnakeCase}_repository_delete_not_found`,
                     message: `No se encontró ${moduleName} con id ${id}.`,
                     moduleName: modelSnakeCase,
-                    action: "eliminar",
+                    action: 'eliminar',
                     extraMeta: {
                         resourceId: id,
                     },
@@ -222,7 +223,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_delete_success`,
                 message: `${moduleName} eliminado(a) correctamente.`,
                 moduleName: modelSnakeCase,
-                action: "eliminar",
+                action: 'eliminar',
                 extraMeta: {
                     resourceId: id,
                 },
@@ -234,7 +235,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_delete_error`,
                 message: `Error al eliminar ${moduleName}.`,
                 moduleName: modelSnakeCase,
-                action: "eliminar",
+                action: 'eliminar',
                 error,
                 extraMeta: {
                     resourceId: id,
@@ -245,13 +246,13 @@ function getRepository(moduleName) {
         }
     }
 
-    async function listar({ offset, limit }) {
+    async function listar({ offset, limit } = {}) {
         try {
             logRepoInfo({
                 event: `${modelSnakeCase}_repository_list_started`,
                 message: `Iniciando listado paginado de ${moduleName}.`,
                 moduleName: modelSnakeCase,
-                action: "listar",
+                action: 'listar',
                 extraMeta: {
                     offset,
                     limit,
@@ -259,7 +260,7 @@ function getRepository(moduleName) {
             });
 
             const { count, rows } = await model.findAndCountAll({
-                order: [["id", "ASC"]],
+                order: [['id', 'ASC']],
                 offset,
                 limit,
             });
@@ -277,7 +278,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_list_success`,
                 message: `Listado de ${moduleName} obtenido correctamente.`,
                 moduleName: modelSnakeCase,
-                action: "listar",
+                action: 'listar',
                 extraMeta: {
                     offset,
                     limit,
@@ -292,7 +293,7 @@ function getRepository(moduleName) {
                 event: `${modelSnakeCase}_repository_list_error`,
                 message: `Error al listar ${moduleName}.`,
                 moduleName: modelSnakeCase,
-                action: "listar",
+                action: 'listar',
                 error,
                 extraMeta: {
                     offset,

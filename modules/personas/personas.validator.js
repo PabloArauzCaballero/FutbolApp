@@ -1,67 +1,103 @@
 const Validator = require('../../core/validator/validator');
+const idValidator = require('../../core/validator/idValidator')('id');
+const { listValidator } = require('../../core/validator/listValidator');
 
-const personasValidator = new Validator(
-    "personasValidator",
-    {
-        nombre: "string",
-        email: "string",
-        contrasena: "string",
-        rol: "string",
-    },
-    {
-        nombre: (value) => {
-            const normalizedValue = value.trim();
+const usuariosPayloadModel = Object.freeze({
+    nombre: 'string',
+    email: 'string',
+    contrasena: 'string',
+    rol: 'string',
+});
 
-            if (normalizedValue.length < 2 || normalizedValue.length > 60) {
-                return false;
-            }
+const usuariosCallbacks = Object.freeze({
+    nombre: (value) => {
+        const normalizedValue = value.trim();
 
-            if (/\s{2,}/.test(normalizedValue)) {
-                return false;
-            }
-
-            return /^[A-Za-zÁÉÍÓÚáéíóúÑñ' -]+$/.test(normalizedValue);
-        },
-        email: (value) => {
-            const normalizedValue = value.trim().toLowerCase();
-
-            if (normalizedValue.length < 5 || normalizedValue.length > 254) {
-                return false;
-            }
-
-            if (/\s/.test(normalizedValue)) {
-                return false;
-            }
-
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue);
-        },
-        contrasena: (value) => {
-            const password = value;
-
-            if (password.length < 12 || password.length > 64) {
-                return false;
-            }
-
-            const blockedPasswords = new Set([
-                "123456",
-                "12345678",
-                "password",
-                "qwerty",
-                "admin",
-                "letmein"
-            ]);
-
-            return !blockedPasswords.has(password.toLowerCase());
-        },
-
-        rol: (value) => {
-            const validRol = new Set(["admin", "cliente"]);
-            return validRol.has(value.toLowerCase());
+        if (normalizedValue.length < 2 || normalizedValue.length > 60) {
+            return false;
         }
-    }
+
+        if (/\s{2,}/.test(normalizedValue)) {
+            return false;
+        }
+
+        return /^[A-Za-zÁÉÍÓÚáéíóúÑñ' -]+$/.test(normalizedValue);
+    },
+    email: (value) => {
+        const normalizedValue = value.trim().toLowerCase();
+
+        if (normalizedValue.length < 5 || normalizedValue.length > 254) {
+            return false;
+        }
+
+        if (/\s/.test(normalizedValue)) {
+            return false;
+        }
+
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue);
+    },
+    contrasena: (value) => {
+        if (value.length < 8 || value.length > 128) {
+            return false;
+        }
+
+        const blockedPasswords = new Set([
+            '123456',
+            '12345678',
+            'password',
+            'qwerty',
+            'admin',
+            'letmein',
+        ]);
+
+        return !blockedPasswords.has(value.toLowerCase());
+    },
+    rol: (value) => {
+        const validRol = new Set(['admin', 'cliente']);
+        return validRol.has(value.toLowerCase());
+    },
+});
+
+const usuariosValidator = new Validator(
+    'usuariosValidator',
+    usuariosPayloadModel,
+    usuariosCallbacks
+);
+
+const usuariosPatchValidator = new Validator(
+    'usuariosPatchValidator',
+    usuariosPayloadModel,
+    usuariosCallbacks,
+    { allowPartial: true }
 );
 
 module.exports = {
-    personasValidator,
-    Validator,
+    insertValidator: {
+        body: {
+            payloadValidator: usuariosValidator,
+        },
+    },
+    updateValidator: {
+        body: {
+            payloadValidator: usuariosPatchValidator,
+        },
+        params: {
+            payloadValidator: idValidator,
+        },
+    },
+    deleteValidator: {
+        params: {
+            payloadValidator: idValidator,
+        },
+    },
+    getValidator: {
+        params: {
+            payloadValidator: idValidator,
+        },
+    },
+    listValidator: {
+        query: {
+            payloadValidator: listValidator,
+        },
+    },
 };

@@ -1,15 +1,16 @@
-const Validator = require('../../core/validator/validator');
-const validatePositiveNumberCallback = require('../../core/validator/validatePositiveNumberCallback');
+const Validator = require('./validator');
+const validatePositiveNumberCallback = require('./validatePositiveNumberCallback');
 
-function createIdValidator(idFieldName = "id"){
+function createIdValidator(idFieldName = 'id', options = {}) {
     return new Validator(
-        "idValidator",
+        'idValidator',
         {
-            [idFieldName]: "number",
+            [idFieldName]: 'number',
         },
         {
             [idFieldName]: validatePositiveNumberCallback,
-        }
+        },
+        options
     );
 }
 

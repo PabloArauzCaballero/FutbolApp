@@ -1,25 +1,78 @@
-const Logger = require("./logger");
+const path = require('path');
+const { Logger, LEVEL_WEIGHTS } = require('./logger');
+const { LoggerError } = require('./errors');
 
 const LOG_SCHEMA = Object.freeze({
-    event: "string",
-    message: "string",
-    module: "string",
-    action: "string",
-    statusHttp: "number",
-    requestId: "string",
-    traceId: "string",
-    durationMs: "number",
-    success: "boolean",
-    errorCode: "string",
-    meta: "object",
+  event: 'string',
+  message: 'string',
+  module: 'string',
+  action: 'string',
+  statusHttp: 'number',
+  requestId: 'string',
+  traceId: 'string',
+  durationMs: 'number',
+  success: 'boolean',
+  errorCode: 'string',
+  meta: 'object',
+  occurredAt: 'timestamp',
+  tags: 'array',
+  context: 'object',
+  payload: 'any',
 });
 
-const appLogger = new Logger("App", "./logs/appLogs.jsonl", LOG_SCHEMA);
-const serverLogger = new Logger("Server", "./logs/serverLogs.jsonl", LOG_SCHEMA);
+function createLogger(moduleName, filePath = null, columnsModel = LOG_SCHEMA, options = {}) {
+  return new Logger(moduleName, filePath, columnsModel, options);
+}
 
-module.exports = {
-    appLogger,
-    serverLogger,
-    Logger,
-    LOG_SCHEMA,
+function createAppLogger(options = {}) {
+  const logsDir = path.resolve(options.logsDir ?? path.join(process.cwd(), 'logs'));
+  return createLogger('App', path.join(logsDir, 'appLogs.jsonl'), LOG_SCHEMA, options);
+}
+
+function createServerLogger(options = {}) {
+  const logsDir = path.resolve(options.logsDir ?? path.join(process.cwd(), 'logs'));
+  return createLogger('Server', path.join(logsDir, 'serverLogs.jsonl'), LOG_SCHEMA, options);
+}
+
+let appLoggerSingleton = null;
+let serverLoggerSingleton = null;
+
+function getAppLogger() {
+  if (!appLoggerSingleton) {
+    appLoggerSingleton = createAppLogger();
+  }
+
+  return appLoggerSingleton;
+}
+
+function getServerLogger() {
+  if (!serverLoggerSingleton) {
+    serverLoggerSingleton = createServerLogger();
+  }
+
+  return serverLoggerSingleton;
+}
+
+const exportedApi = {
+  Logger,
+  LoggerError,
+  LEVEL_WEIGHTS,
+  LOG_SCHEMA,
+  createLogger,
+  createAppLogger,
+  createServerLogger,
+  getAppLogger,
+  getServerLogger,
 };
+
+Object.defineProperty(exportedApi, 'appLogger', {
+  enumerable: true,
+  get: getAppLogger,
+});
+
+Object.defineProperty(exportedApi, 'serverLogger', {
+  enumerable: true,
+  get: getServerLogger,
+});
+
+module.exports = exportedApi;

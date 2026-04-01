@@ -1,11 +1,13 @@
-const Normalizer = require("./normalizer");
+const Normalizer = require('./normalizer');
 
-function createIdNormalizer(idFieldName = "id"){
+function createIdNormalizer(idFieldName = 'id', options = {}) {
     return new Normalizer(
-        "idNormalizer",
+        'idNormalizer',
         {
-            [idFieldName] : "number",
-        }
+            [idFieldName]: 'number',
+        },
+        {},
+        options
     );
 }
 

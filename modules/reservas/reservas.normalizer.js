@@ -3,29 +3,32 @@ const idNormalizer = require('../../core/normalizer/idNormalizer')('id');
 const normalizePositiveNumberCallback = require('../../core/normalizer/normalizePositiveNumberCallback');
 const { listNormalizer } = require('../../core/normalizer/listNormalizer');
 
-const canchaModel = {
-    nombre: 'string',
-    precio_por_hora: 'number',
-    estado: 'string',
-    tipo_id: 'number',
-};
-
-const canchaCallbacks = {
-    precio_por_hora: (_rawValue, normalizedValue) => Number(normalizedValue.toFixed(2)),
-    estado: (_rawValue, normalizedValue) => normalizedValue.toLowerCase(),
-    tipo_id: normalizePositiveNumberCallback,
-};
-
-const canchasNormalizer = new Normalizer(
-    'canchasNormalizer',
-    canchaModel,
-    canchaCallbacks
+const reservasNormalizer = new Normalizer(
+    'reservasNormalizer',
+    {
+        usuario_id: 'number',
+        horario_id: 'number',
+        estado: 'string',
+    },
+    {
+        usuario_id: normalizePositiveNumberCallback,
+        horario_id: normalizePositiveNumberCallback,
+        estado: (_rawValue, normalizedValue) => normalizedValue.toLowerCase(),
+    }
 );
 
-const canchasPatchNormalizer = new Normalizer(
-    'canchasPatchNormalizer',
-    canchaModel,
-    canchaCallbacks,
+const reservasPatchNormalizer = new Normalizer(
+    'reservasPatchNormalizer',
+    {
+        usuario_id: 'number',
+        horario_id: 'number',
+        estado: 'string',
+    },
+    {
+        usuario_id: normalizePositiveNumberCallback,
+        horario_id: normalizePositiveNumberCallback,
+        estado: (_rawValue, normalizedValue) => normalizedValue.toLowerCase(),
+    },
     {
         allowEmptyPayload: true,
     }
@@ -34,12 +37,12 @@ const canchasPatchNormalizer = new Normalizer(
 module.exports = {
     insertNormalizer: {
         body: {
-            payloadNormalizer: canchasNormalizer,
+            payloadNormalizer: reservasNormalizer,
         },
     },
     updateNormalizer: {
         body: {
-            payloadNormalizer: canchasPatchNormalizer,
+            payloadNormalizer: reservasPatchNormalizer,
         },
         params: {
             payloadNormalizer: idNormalizer,
@@ -60,5 +63,4 @@ module.exports = {
             payloadNormalizer: listNormalizer,
         },
     },
-    Normalizer,
 };
