@@ -1,73 +1,89 @@
-# Dependencias
+# =========================
+# DEPENDENCIAS
+# =========================
 node_modules/
 
-# Variables de entorno
+# =========================
+# VARIABLES DE ENTORNO
+# =========================
 .env
 .env.*
 !.env.example
 
-# Build / producción
-dist/
-build/
-out/
-
-# Logs
-logs/
+# =========================
+# LOGS
+# =========================
+logs/*.jsonl
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Cobertura / testing
+# =========================
+# BUILD / CACHE
+# =========================
+dist/
+build/
 coverage/
-.nyc_output/
-
-# Cachés
 .cache/
-.parcel-cache/
 .vite/
 .eslintcache
+.nyc_output/
+*.tsbuildinfo
 
-# Archivos temporales
+# =========================
+# ARCHIVOS TEMPORALES
+# =========================
 tmp/
 temp/
 *.tmp
+*.temp
 
-# Sistema operativo
+# =========================
+# SISTEMA OPERATIVO
+# =========================
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# IDE / editores
+# =========================
+# EDITORES / IDE
+# =========================
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Archivos de runtime
+# =========================
+# ARCHIVOS DE RUNTIME
+# =========================
 pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Archivos comprimidos
+# =========================
+# BASES LOCALES TEMPORALES
+# =========================
+*.sqlite
+*.sqlite3
+
+# =========================
+# ARCHIVOS SENSIBLES
+# =========================
+secret.*
+credentials.*
+
+# =========================
+# ZIPS / COMPRIMIDOS
+# =========================
 *.zip
 *.tar
 *.gz
 *.rar
 
-# Si generas uploads o archivos locales temporales
-uploads/
-storage/
-
-# TypeScript
-*.tsbuildinfo
-
-# Sequelize / bases locales temporales
-*.sqlite
-*.sqlite3
-
-# Archivos sensibles comunes
-secret.*
-credentials.*
+# =========================
+# OPCIONAL: CONFIGS LOCALES
+# =========================
+.sixth/
