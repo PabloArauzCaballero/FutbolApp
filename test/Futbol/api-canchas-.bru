@@ -1,0 +1,25 @@
+meta {
+  name: /api/canchas/
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/api/canchas
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Cancha Secundaria",
+    "tipo_id": 1,
+    "precio_por_hora": 150.00,
+    "estado": "Activa"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
