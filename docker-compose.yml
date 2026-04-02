@@ -8,11 +8,19 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
     ports:
+<<<<<<< HEAD
       - "${DBPORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d futbol"]
+=======
+      - 5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $postgres -d futbol"]
+>>>>>>> 5cbdcf2 (docker)
       interval: 10s
       timeout: 5s
       retries: 5
@@ -37,9 +45,15 @@ services:
       DATABASE_HOST: db
       DBPORT: 5432
       DATABASE_DIALECT: postgres
+<<<<<<< HEAD
       SESSION_SECRET: beb36f16-96df-437f-bc65-e76c0c638c8b
     ports:
       - "3000:3000"
+=======
+      SESSION_SECRET: 
+    ports:
+      - "${PORT:-3000}:3000"
+>>>>>>> 5cbdcf2 (docker)
     healthcheck:
       test:
         [
