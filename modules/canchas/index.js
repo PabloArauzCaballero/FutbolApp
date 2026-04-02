@@ -3,7 +3,7 @@ const viewRouter = require("./canchas.view.routes");
 
 module.exports = {
     basePath: "/canchas",
-    viewBasePath: "/canchas",
+    viewBasePath: "/admin/canchas",
     router,
     viewRouter,
 };

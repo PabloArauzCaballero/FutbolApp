@@ -5,8 +5,10 @@ const personasModule = require('./personas');
 const resenasModule = require('./resenas');
 const reservasModule = require('./reservas');
 const authModule = require('./auth');
+const frontendViewsModule = require('./frontendViews');
 
 module.exports = [
+  frontendViewsModule,
   canchasModule,
   tipoCanchaModule,
   horariosModule,

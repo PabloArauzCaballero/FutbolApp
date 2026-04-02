@@ -3,7 +3,7 @@ const viewRouter = require("./horarios.view.routes");
 
 module.exports = {
     basePath: "/horarios",
-    viewBasePath: "/horarios",
+    viewBasePath: "/admin/horarios",
     router,
     viewRouter,
 };

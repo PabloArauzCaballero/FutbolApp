@@ -26,7 +26,7 @@ sequelize.initDatabase = async function initDatabase() {
 
             serverLogger.log({
                 event: "database_auth_success",
-                message: "Connection has been established successfully.",
+                message: "La conexión se ha establecido correctamente.",
                 module: "db.config",
                 action: "authenticate",
                 success: true,
@@ -61,7 +61,7 @@ sequelize.initDatabase = async function initDatabase() {
 
             serverLogger.error({
                 event: "database_init_error",
-                message: error?.message || "Unable to initialize database.",
+                message: error?.message || "No se pudo inicializar la base de datos.",
                 module: "db.config",
                 action: "initDatabase",
                 success: false,

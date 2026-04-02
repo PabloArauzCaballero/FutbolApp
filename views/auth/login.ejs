@@ -1,82 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <%- include('../fragments/head', { pageTitle: `${appConfig.brand} | Acceso` }) %>
+    <%- include('../partials/head', { appConfig, pageTitle }) %>
 </head>
 <body>
-    <main class="auth-shell d-flex align-items-center justify-content-center py-5">
+    <main class="auth-shell d-flex align-items-center py-5">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="card auth-card overflow-hidden">
-                        <div class="row g-0">
-                            <div class="col-lg-5 bg-dark text-white p-5 d-flex flex-column justify-content-center">
-                                <p class="text-uppercase small mb-2">Monolito + Bootstrap + fragments</p>
-                                <h1 class="display-6 fw-bold mb-3"><%= appConfig.brand %></h1>
-                                <p class="mb-0 text-white-50">Desde esta vista puedes iniciar sesión y registrar el primer usuario del sistema sin romper la estructura del backend.</p>
-                            </div>
-                            <div class="col-lg-7 p-4 p-lg-5 bg-white">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <div>
-                                        <h2 class="h3 mb-1">Acceso al sistema</h2>
-                                        <p class="text-muted mb-0">Inicia sesión o crea un usuario nuevo.</p>
-                                    </div>
+                <div class="col-lg-9">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4 p-md-5">
+                            <h1 class="h3 mb-1"><%= appConfig.brand %></h1>
+                            <p class="text-muted mb-4">Ingresa al sistema o registra un usuario nuevo.</p>
+
+                            <div id="auth-feedback" class="alert d-none" role="alert"></div>
+
+                            <ul class="nav nav-tabs mb-4" id="authTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-pane" type="button" role="tab">Iniciar sesión</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-pane" type="button" role="tab">Registrar usuario</button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="login-pane" role="tabpanel">
+                                    <form id="login-form" class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label" for="login-email">Correo</label>
+                                            <input class="form-control" id="login-email" name="email" type="email" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="login-password">Contraseña</label>
+                                            <input class="form-control" id="login-password" name="contrasena" type="password" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <button class="btn btn-primary" type="submit">Entrar</button>
+                                        </div>
+                                    </form>
                                 </div>
 
-                                <div id="auth-feedback" class="alert d-none" role="alert"></div>
-
-                                <ul class="nav nav-tabs mb-4" id="authTabs" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-pane" type="button" role="tab">Login</button>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-pane" type="button" role="tab">Registrar usuario</button>
-                                    </li>
-                                </ul>
-
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="login-pane" role="tabpanel">
-                                        <form id="login-form" class="row g-3">
-                                            <div class="col-12">
-                                                <label class="form-label" for="login-email">Correo</label>
-                                                <input class="form-control" id="login-email" name="email" type="email" required>
-                                            </div>
-                                            <div class="col-12">
-                                                <label class="form-label" for="login-password">Contraseña</label>
-                                                <input class="form-control" id="login-password" name="contrasena" type="password" required>
-                                            </div>
-                                            <div class="col-12">
-                                                <button class="btn btn-primary w-100" type="submit">Entrar</button>
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                    <div class="tab-pane fade" id="register-pane" role="tabpanel">
-                                        <form id="register-form" class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label" for="register-name">Nombre</label>
-                                                <input class="form-control" id="register-name" name="nombre" type="text" required>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label" for="register-role">Rol</label>
-                                                <select class="form-select" id="register-role" name="rol" required>
-                                                    <option value="admin">Admin</option>
-                                                    <option value="cliente">Cliente</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-12">
-                                                <label class="form-label" for="register-email">Correo</label>
-                                                <input class="form-control" id="register-email" name="email" type="email" required>
-                                            </div>
-                                            <div class="col-12">
-                                                <label class="form-label" for="register-password">Contraseña</label>
-                                                <input class="form-control" id="register-password" name="contrasena" type="password" required>
-                                            </div>
-                                            <div class="col-12">
-                                                <button class="btn btn-outline-primary w-100" type="submit">Registrar usuario</button>
-                                            </div>
-                                        </form>
-                                    </div>
+                                <div class="tab-pane fade" id="register-pane" role="tabpanel">
+                                    <form id="register-form" class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="register-name">Nombre</label>
+                                            <input class="form-control" id="register-name" name="nombre" type="text" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="register-role">Rol</label>
+                                            <select class="form-select" id="register-role" name="rol" required>
+                                                <option value="admin">Admin</option>
+                                                <option value="cliente">Cliente</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="register-email">Correo</label>
+                                            <input class="form-control" id="register-email" name="email" type="email" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="register-password">Contraseña</label>
+                                            <input class="form-control" id="register-password" name="contrasena" type="password" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <button class="btn btn-outline-primary" type="submit">Registrar</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -89,7 +78,6 @@
     <script>
         window.__APP_CONFIG__ = <%- JSON.stringify(appConfig) %>;
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/public/js/auth.js"></script>
+    <%- include('../partials/footer', { pageScript: '/public/js/auth.js' }) %>
 </body>
 </html>

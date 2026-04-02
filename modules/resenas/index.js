@@ -3,7 +3,7 @@ const viewRouter = require("./resenas.view.routes");
 
 module.exports = {
     basePath: "/resenas",
-    viewBasePath: "/resenas",
+    viewBasePath: "/admin/resenas",
     router,
     viewRouter,
 };

@@ -3,7 +3,7 @@ const viewRouter = require("./reservas.view.routes");
 
 module.exports = {
     basePath: "/reservas",
-    viewBasePath: "/reservas",
+    viewBasePath: "/admin/reservas",
     router,
     viewRouter,
 };

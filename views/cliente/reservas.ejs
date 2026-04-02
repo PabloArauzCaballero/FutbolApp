@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', { appConfig, pageTitle }) %>
+</head>
+<body>
+    <%- include('../partials/navbar', { appConfig, navigationItems, currentUser, currentPath }) %>
+
+    <main class="container py-4">
+        <section class="mb-4">
+            <h1 class="h3 mb-1">Mis reservas</h1>
+            <p class="text-muted mb-0">Aquí puedes ver tu historial y cancelar reservas confirmadas.</p>
+        </section>
+
+        <div id="cliente-feedback" class="alert d-none" role="alert"></div>
+
+        <section class="card shadow-sm">
+            <div class="card-body">
+                <button class="btn btn-outline-secondary btn-sm mb-3" id="recargar-reservas" type="button">Recargar</button>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID Reserva</th>
+                                <th>ID Horario</th>
+                                <th>Fecha</th>
+                                <th>Hora Inicio</th>
+                                <th>Hora Fin</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservas-body">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-3">Cargando reservas...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        window.__CLIENT_CONTEXT__ = {
+            userId: <%- JSON.stringify(currentUser?.id || null) %>,
+            defaultLimit: <%- JSON.stringify(appConfig.defaultListLimit) %>,
+        };
+    </script>
+    <%- include('../partials/footer', { pageScript: '/public/js/client-reservas.js' }) %>
+</body>
+</html>

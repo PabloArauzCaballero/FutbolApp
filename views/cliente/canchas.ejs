@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', { appConfig, pageTitle }) %>
+</head>
+<body>
+    <%- include('../partials/navbar', { appConfig, navigationItems, currentUser, currentPath }) %>
+
+    <main class="container py-4">
+        <section class="mb-4">
+            <h1 class="h3 mb-1">Canchas disponibles</h1>
+            <p class="text-muted mb-0">Selecciona una cancha y reserva un horario disponible.</p>
+        </section>
+
+        <div id="cliente-feedback" class="alert d-none" role="alert"></div>
+
+        <section class="mb-4">
+            <div class="row" id="canchas-list">
+                <div class="col-12 text-muted">Cargando canchas...</div>
+            </div>
+        </section>
+
+        <section class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                    <div>
+                        <h2 class="h5 mb-1" id="horarios-title">Horarios disponibles</h2>
+                        <p class="text-muted mb-0" id="horarios-subtitle">Elige una cancha para ver horarios.</p>
+                    </div>
+                    <div>
+                        <label for="filtro-fecha" class="form-label mb-1">Filtrar por fecha</label>
+                        <input type="date" id="filtro-fecha" class="form-control">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th>Disponible</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="horarios-body">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-3">Sin datos.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Reseñas de la cancha seleccionada</h2>
+                <div id="resenas-cancha-list" class="text-muted">Selecciona una cancha para ver reseñas.</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        window.__CLIENT_CONTEXT__ = {
+            userId: <%- JSON.stringify(currentUser?.id || null) %>,
+            defaultLimit: <%- JSON.stringify(appConfig.defaultListLimit) %>,
+        };
+    </script>
+    <%- include('../partials/footer', { pageScript: '/public/js/client-canchas.js' }) %>
+</body>
+</html>

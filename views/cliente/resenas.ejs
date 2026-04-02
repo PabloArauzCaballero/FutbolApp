@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', { appConfig, pageTitle }) %>
+</head>
+<body>
+    <%- include('../partials/navbar', { appConfig, navigationItems, currentUser, currentPath }) %>
+
+    <main class="container py-4">
+        <section class="mb-4">
+            <h1 class="h3 mb-1">Mis reseñas</h1>
+            <p class="text-muted mb-0">Puedes dejar reseñas solo de reservas que ya pasaron.</p>
+        </section>
+
+        <div id="cliente-feedback" class="alert d-none" role="alert"></div>
+
+        <section class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Reservas finalizadas sin reseña</h2>
+                <div id="resenas-pendientes-list" class="text-muted">Cargando...</div>
+            </div>
+        </section>
+
+        <section class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Mis reseñas registradas</h2>
+                <div id="mis-resenas-list" class="text-muted">Cargando...</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        window.__CLIENT_CONTEXT__ = {
+            userId: <%- JSON.stringify(currentUser?.id || null) %>,
+            defaultLimit: <%- JSON.stringify(appConfig.defaultListLimit) %>,
+        };
+    </script>
+    <%- include('../partials/footer', { pageScript: '/public/js/client-resenas.js' }) %>
+</body>
+</html>

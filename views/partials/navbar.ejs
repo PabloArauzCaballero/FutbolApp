@@ -1,0 +1,33 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/dashboard"><%= appConfig.brand %></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Abrir navegación">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <% if (Array.isArray(navigationItems)) { %>
+                    <% navigationItems.forEach((item) => { %>
+                        <li class="nav-item">
+                            <a class="nav-link <%= currentPath === item.href ? 'active' : '' %>" href="<%= item.href %>">
+                                <%= item.title %>
+                            </a>
+                        </li>
+                    <% }) %>
+                <% } %>
+            </ul>
+
+            <% if (currentUser) { %>
+                <div class="d-flex align-items-center gap-3">
+                    <small class="text-light">
+                        Hola, <strong><%= currentUser.nombre || currentUser.email %></strong> (<%= currentUser.rol %>)
+                    </small>
+                    <button type="button" class="btn btn-outline-light btn-sm" data-action="logout">Salir</button>
+                </div>
+            <% } else { %>
+                <a href="/login" class="btn btn-outline-light btn-sm">Ingresar</a>
+            <% } %>
+        </div>
+    </div>
+</nav>
