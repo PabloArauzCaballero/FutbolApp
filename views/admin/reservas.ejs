@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', { appConfig, pageTitle }) %>
+</head>
+<body>
+    <%- include('../partials/navbar', { appConfig, navigationItems, currentUser, currentPath }) %>
+
+    <main class="container py-4">
+        <h1 class="h3 mb-1">Reservas</h1>
+        <p class="text-muted mb-4">Crear, editar y eliminar reservas.</p>
+
+        <div id="admin-feedback" class="alert d-none" role="alert"></div>
+
+        <section class="card mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Formulario</h2>
+                <form id="form-reservas" class="row g-3">
+                    <input type="hidden" id="reserva-id">
+                    <div class="col-md-4">
+                        <label class="form-label" for="reserva-usuario">Usuario</label>
+                        <select class="form-select" id="reserva-usuario" required></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="reserva-horario">Horario</label>
+                        <select class="form-select" id="reserva-horario" required></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="reserva-estado">Estado</label>
+                        <select class="form-select" id="reserva-estado" required>
+                            <option value="confirmada">Confirmada</option>
+                            <option value="cancelada">Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                        <button class="btn btn-outline-secondary" id="cancelar-edicion-reservas" type="button">Cancelar edición</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Listado</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario ID</th>
+                                <th>Horario ID</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-reservas-body">
+                            <tr><td colspan="5" class="text-center text-muted py-3">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../partials/footer', { pageScript }) %>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', { appConfig, pageTitle }) %>
+</head>
+<body>
+    <%- include('../partials/navbar', { appConfig, navigationItems, currentUser, currentPath }) %>
+
+    <main class="container py-4">
+        <h1 class="h3 mb-1">Tipos de cancha</h1>
+        <p class="text-muted mb-4">Crear, editar y eliminar tipos.</p>
+
+        <div id="admin-feedback" class="alert d-none" role="alert"></div>
+
+        <section class="card mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Formulario</h2>
+                <form id="form-tipo-cancha" class="row g-3">
+                    <input type="hidden" id="tipo-cancha-id">
+                    <div class="col-md-8">
+                        <label class="form-label" for="tipo-cancha-nombre">Nombre</label>
+                        <input class="form-control" id="tipo-cancha-nombre" required>
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                        <button class="btn btn-outline-secondary" id="cancelar-edicion-tipo-cancha" type="button">Cancelar edición</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Listado</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-tipo-cancha-body">
+                            <tr><td colspan="3" class="text-center text-muted py-3">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../partials/footer', { pageScript }) %>
+</body>
+</html>

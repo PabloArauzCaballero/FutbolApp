@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', { appConfig, pageTitle }) %>
+</head>
+<body>
+    <%- include('../partials/navbar', { appConfig, navigationItems, currentUser, currentPath }) %>
+
+    <main class="container py-4">
+        <h1 class="h3 mb-1">Reseñas</h1>
+        <p class="text-muted mb-4">Crear, editar y eliminar reseñas.</p>
+
+        <div id="admin-feedback" class="alert d-none" role="alert"></div>
+
+        <section class="card mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Formulario</h2>
+                <form id="form-resenas" class="row g-3">
+                    <input type="hidden" id="resena-id">
+                    <div class="col-md-4">
+                        <label class="form-label" for="resena-usuario">Usuario</label>
+                        <select class="form-select" id="resena-usuario" required></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="resena-cancha">Cancha</label>
+                        <select class="form-select" id="resena-cancha" required></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="resena-calificacion">Calificación</label>
+                        <input class="form-control" id="resena-calificacion" type="number" min="1" max="5" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="resena-comentario">Comentario</label>
+                        <textarea class="form-control" id="resena-comentario" rows="3" minlength="3" maxlength="500" required></textarea>
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                        <button class="btn btn-outline-secondary" id="cancelar-edicion-resenas" type="button">Cancelar edición</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Listado</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario ID</th>
+                                <th>Cancha ID</th>
+                                <th>Calificación</th>
+                                <th>Comentario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-resenas-body">
+                            <tr><td colspan="6" class="text-center text-muted py-3">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../partials/footer', { pageScript }) %>
+</body>
+</html>

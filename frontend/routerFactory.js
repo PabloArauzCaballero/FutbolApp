@@ -9,20 +9,20 @@ const { requireRole } = require('../middlewares/require-role');
 
 function createCrudViewRouter(moduleKey) {
     const router = express.Router();
-    const moduleConfig = getAdminModuleConfigByKey(moduleKey);
+    const pageConfig = getAdminModuleConfigByKey(moduleKey);
 
-    if (!moduleConfig) {
+    if (!pageConfig) {
         throw new Error(`No existe configuración frontend para el módulo: ${moduleKey}`);
     }
 
     router.get('/', requireRole('admin'), (req, res) => {
-        return res.render('admin/crud', {
+        return res.render(pageConfig.view, {
             appConfig: frontendConfig,
             navigationItems: getAdminNavigationItems(),
-            pageConfig: moduleConfig,
             currentUser: req.session?.user || null,
-            currentPath: moduleConfig.viewBasePath,
-            pageTitle: moduleConfig.title,
+            currentPath: pageConfig.href,
+            pageTitle: pageConfig.title,
+            pageScript: pageConfig.script,
         });
     });
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', { appConfig, pageTitle }) %>
+</head>
+<body>
+    <%- include('../partials/navbar', { appConfig, navigationItems, currentUser, currentPath }) %>
+
+    <main class="container py-4">
+        <h1 class="h3 mb-1">Canchas</h1>
+        <p class="text-muted mb-4">Crear, editar y eliminar canchas.</p>
+
+        <div id="admin-feedback" class="alert d-none" role="alert"></div>
+
+        <section class="card mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Formulario</h2>
+                <form id="form-canchas" class="row g-3">
+                    <input type="hidden" id="cancha-id">
+                    <div class="col-md-6">
+                        <label class="form-label" for="cancha-nombre">Nombre</label>
+                        <input class="form-control" id="cancha-nombre" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="cancha-tipo">Tipo</label>
+                        <select class="form-select" id="cancha-tipo" required></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="cancha-precio">Precio por hora</label>
+                        <input class="form-control" id="cancha-precio" type="number" min="0" step="0.01" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="cancha-estado">Estado</label>
+                        <select class="form-select" id="cancha-estado" required>
+                            <option value="activa">Activa</option>
+                            <option value="inactiva">Inactiva</option>
+                        </select>
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                        <button class="btn btn-outline-secondary" id="cancelar-edicion-canchas" type="button">Cancelar edición</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Listado</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Tipo ID</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-canchas-body">
+                            <tr><td colspan="6" class="text-center text-muted py-3">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../partials/footer', { pageScript }) %>
+</body>
+</html>
