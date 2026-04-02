@@ -2,26 +2,12 @@ const Normalizer = require('../../core/normalizer/normalizer');
 const idNormalizer = require('../../core/normalizer/idNormalizer')('id');
 const { listNormalizer } = require('../../core/normalizer/listNormalizer');
 
-const usuariosNormalizer = new Normalizer(
-    'usuariosNormalizer',
-    {
-        nombre: 'string',
-        email: 'string',
-        contrasena: 'string',
-        rol: 'string',
-    },
-    {
-        email: (_rawValue, normalizedValue) => normalizedValue.toLowerCase(),
-        rol: (_rawValue, normalizedValue) => normalizedValue.toLowerCase(),
-    }
-);
 
 const usuariosPatchNormalizer = new Normalizer(
     'usuariosPatchNormalizer',
     {
         nombre: 'string',
         email: 'string',
-        contrasena: 'string',
         rol: 'string',
     },
     {
@@ -34,11 +20,6 @@ const usuariosPatchNormalizer = new Normalizer(
 );
 
 module.exports = {
-    insertNormalizer: {
-        body: {
-            payloadNormalizer: usuariosNormalizer,
-        },
-    },
     updateNormalizer: {
         body: {
             payloadNormalizer: usuariosPatchNormalizer,

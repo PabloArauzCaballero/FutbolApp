@@ -6,6 +6,8 @@ const usuariosPayloadModel = Object.freeze({
     nombre: 'string',
     email: 'string',
     rol: 'string',
+    contrasena: 'string',
+
 });
 
 const usuariosCallbacks = Object.freeze({
@@ -36,7 +38,6 @@ const usuariosCallbacks = Object.freeze({
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue);
     },
 
-/*
     contrasena: (value) => {
         if (value.length < 8 || value.length > 128) {
             return false;
@@ -54,12 +55,12 @@ const usuariosCallbacks = Object.freeze({
         return !blockedPasswords.has(value.toLowerCase());
     
     },
-*/
     rol: (value) => {
         const validRol = new Set(['admin', 'cliente']);
         return validRol.has(value.toLowerCase());
     },
 });
+
 
 const usuariosValidator = new Validator(
     'usuariosValidator',
@@ -67,40 +68,9 @@ const usuariosValidator = new Validator(
     usuariosCallbacks
 );
 
-const usuariosPatchValidator = new Validator(
-    'usuariosPatchValidator',
-    usuariosPayloadModel,
-    usuariosCallbacks,
-    { allowPartial: true }
-);
 
 module.exports = {
-    insertValidator: {
-        body: {
-            payloadValidator: usuariosValidator,
-        },
-    },
-    updateValidator: {
-        body: {
-            payloadValidator: usuariosPatchValidator,
-        },
-        params: {
-            payloadValidator: idValidator,
-        },
-    },
-    deleteValidator: {
-        params: {
-            payloadValidator: idValidator,
-        },
-    },
-    getValidator: {
-        params: {
-            payloadValidator: idValidator,
-        },
-    },
-    listValidator: {
-        query: {
-            payloadValidator: listValidator,
-        },
+    body: {
+        payloadValidator: usuariosValidator,
     },
 };

@@ -14,10 +14,12 @@
   "dependencies": {
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "nodemon": "^3.1.14",
     "pg": "^8.20.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.8",
+    "sha1": "^1.1.1",
     "sqlite3": "^6.0.1"
   }
 }

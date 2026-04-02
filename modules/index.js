@@ -4,6 +4,7 @@ const horariosModule = require('./horarios');
 const personasModule = require('./personas');
 const resenasModule = require('./resenas');
 const reservasModule = require('./reservas');
+const authModule = require('./auth');
 
 module.exports = [
   canchasModule,
@@ -12,4 +13,5 @@ module.exports = [
   personasModule,
   resenasModule,
   reservasModule,
+  authModule,
 ];

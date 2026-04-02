@@ -1,8 +1,15 @@
 const express = require("express");
 const crypto = require("crypto");
+const session = require("express-session");
 const modules = require("./modules");
+const path = require("path");
 const app = express();
 const { serverLogger } = require("./logs");
+const { checkUser } = require("./middlewares/check-user");
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
 
 function createOptionalMiddleware(packageName, fallbackFactory = () => (_req, _res, next) => next()) {
     try {
@@ -44,6 +51,12 @@ app.use((req, _res, next) => {
     next();
 });
 
+
+app.use(session({
+    secret: "beb36f16-96df-437f-bc65-e76c0c638c8b"
+}));
+
+
 app.get("/health", (_req, res) => {
     return res.status(200).json({
         ok: true,
@@ -65,8 +78,12 @@ for (const moduleEntry of modules) {
     }
 
     console.log("MODULE MOUNTED =>", `/api${basePath}`);
-    
-    app.use(`/api${basePath}`, moduleEntry.router);
+        
+    if(basePath !== "/auth"){
+        app.use(`/api${basePath}`, checkUser, moduleEntry.router);
+    }else{
+        app.use(`/api${basePath}`, moduleEntry.router);
+    }
 }
 
 app.use((req, res) => {

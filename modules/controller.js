@@ -8,7 +8,7 @@ const {
     logInfo,
 } = require("../logs/utilities");
 
-function getController(moduleName, validator, normalizer) {
+function getController(moduleName, validator, normalizer, ) {
     const moduleNameSnakeCase = toSnakeCase(moduleName);
     const moduleLabel = moduleNameSnakeCase.replace(/_/g, " ");
 
@@ -176,7 +176,7 @@ function getController(moduleName, validator, normalizer) {
                 });
             }
 
-            const paramsResultValues = Object.params(paramsResult.data);
+            const paramsResultValues = Object.values(paramsResult.data);
 
             if(paramsResultValues.length == 0){
                 throw new Error("No se recibio ningun ID.");
@@ -279,7 +279,7 @@ function getController(moduleName, validator, normalizer) {
             }
 
 
-            const paramsResultValues = Object.params(paramsResult.data);
+            const paramsResultValues = Object.values(paramsResult.data);
 
             if(paramsResultValues.length == 0){
                 throw new Error("No se recibio ningun ID.");
@@ -410,7 +410,7 @@ function getController(moduleName, validator, normalizer) {
                 });
             }
 
-            const paramsResultValues = Object.params(paramsResult.data);
+            const paramsResultValues = Object.values(paramsResult.data);
 
             if(paramsResultValues.length == 0){
                 throw new Error("No se recibio ningun ID.");
