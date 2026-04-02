@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+.env.*
+logs/*.jsonl
+*.log
+coverage
+.nyc_output
+.vscode
+.idea
+*.zip
+README-docker.md

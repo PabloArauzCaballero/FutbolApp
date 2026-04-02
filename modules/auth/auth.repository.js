@@ -1,18 +1,17 @@
-const sequelize = require("../../core/config/db.config");
-const personas = require("../personas/personas.model")(sequelize);
+const personas = require("../models").Usuarios;
 const {
     logRepoInfo,
     logRepoError,
 } = require('../../logs/utilities');
-const {id} = require("./module.prototype");
+const { id } = require("./module.prototype");
 const MODULE_NAME = "auth";
 
-async function login(email){
-    try{
+async function login(email) {
+    try {
         logRepoInfo({
             event: "login_repository_create_started",
             message: "Obteniendo informacion de usuario",
-            moduleName: MODULE_NAME ,
+            moduleName: MODULE_NAME,
             action: 'acceso',
             extraMeta: {
                 email,
@@ -20,19 +19,18 @@ async function login(email){
         });
 
         const usuarioInstance = await personas.findOne({
-            where:{
-                email
-            }
+            where: {
+                email,
+            },
         });
 
-        const usuario = usuarioInstance ? usuarioInstance.toJSON() : usuarioInstance;
-        
+        const usuario = usuarioInstance ? usuarioInstance.toJSON() : null;
+
         return {
             data: usuario,
-            id: usuarioInstance ? usuario[id] : null
+            id: usuario ? usuario[id] : null,
         };
-
-    }catch(error){
+    } catch (error) {
         logRepoError({
             event: "auth_repository_error",
             message: "Error al obtener usuario.",
@@ -40,21 +38,20 @@ async function login(email){
             action: 'acceso',
             error,
             extraMeta: {
-                email
+                email,
             },
         });
-        
+
         throw error;
     }
 }
 
-
-async function register(payload){
-    try{
+async function register(payload) {
+    try {
         logRepoInfo({
             event: "user_register_repository_create_started",
             message: "Creando usuario",
-            moduleName: MODULE_NAME ,
+            moduleName: MODULE_NAME,
             action: 'create',
             extraMeta: payload,
         });
@@ -63,17 +60,16 @@ async function register(payload){
         const usuario = newUsuario ? newUsuario.toJSON() : newUsuario;
 
         return usuario;
-
-    }catch(error){
+    } catch (error) {
         logRepoError({
             event: "auth_repository_error",
             message: "Error al crear usuario.",
             moduleName: MODULE_NAME,
             action: 'create',
             error,
-            extraMeta: payload
+            extraMeta: payload,
         });
-        
+
         throw error;
     }
 }
@@ -81,4 +77,4 @@ async function register(payload){
 module.exports = {
     login,
     register,
-}
+};

@@ -1,0 +1,28 @@
+<div class="card crud-card">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="h4 section-title mb-1">Listado</h2>
+                <p class="text-muted mb-0" id="crud-list-summary">Cargando registros...</p>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <% pageConfig.tableColumns.forEach((column) => { %>
+                            <th scope="col"><%= column.label %></th>
+                        <% }) %>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="crud-table-body">
+                    <tr>
+                        <td colspan="99" class="text-center text-muted py-4">Cargando...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

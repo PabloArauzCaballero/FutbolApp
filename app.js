@@ -3,13 +3,13 @@ const crypto = require("crypto");
 const session = require("express-session");
 const modules = require("./modules");
 const path = require("path");
+const { frontendConfig } = require("./frontend");
 const app = express();
 const { serverLogger } = require("./logs");
 const { checkUser } = require("./middlewares/check-user");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
 
 function createOptionalMiddleware(packageName, fallbackFactory = () => (_req, _res, next) => next()) {
     try {
@@ -44,6 +44,7 @@ app.use(compression());
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use((req, _res, next) => {
     req.startTime = Date.now();
     req.requestId = req.headers["x-request-id"] || crypto.randomUUID();
@@ -51,11 +52,28 @@ app.use((req, _res, next) => {
     next();
 });
 
-
 app.use(session({
-    secret: "beb36f16-96df-437f-bc65-e76c0c638c8b"
+    secret: process.env.SESSION_SECRET || "beb36f16-96df-437f-bc65-e76c0c638c8b",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: "lax",
+    },
 }));
 
+app.use((req, res, next) => {
+    res.locals.currentUser = req.session?.user || null;
+    next();
+});
+
+app.get("/", (req, res) => {
+    if (req.session?.user) {
+        return res.redirect(frontendConfig.homePath);
+    }
+
+    return res.redirect(frontendConfig.loginPath);
+});
 
 app.get("/health", (_req, res) => {
     return res.status(200).json({
@@ -71,6 +89,16 @@ app.use((req, _res, next) => {
 
 for (const moduleEntry of modules) {
     const basePath = normalizeBasePath(moduleEntry?.basePath);
+    const viewBasePath = normalizeBasePath(moduleEntry?.viewBasePath);
+
+    if (viewBasePath && moduleEntry?.viewRouter) {
+        console.log("VIEW MODULE MOUNTED =>", viewBasePath);
+        if (basePath !== "/auth") {
+            app.use(viewBasePath, checkUser, moduleEntry.viewRouter);
+        } else {
+            app.use(viewBasePath, moduleEntry.viewRouter);
+        }
+    }
 
     if (!basePath || !moduleEntry?.router) {
         console.log("MODULE SKIPPED =>", moduleEntry);
@@ -78,10 +106,10 @@ for (const moduleEntry of modules) {
     }
 
     console.log("MODULE MOUNTED =>", `/api${basePath}`);
-        
-    if(basePath !== "/auth"){
+
+    if (basePath !== "/auth") {
         app.use(`/api${basePath}`, checkUser, moduleEntry.router);
-    }else{
+    } else {
         app.use(`/api${basePath}`, moduleEntry.router);
     }
 }
@@ -104,6 +132,12 @@ app.use((req, res) => {
             ip: req.ip,
         },
     });
+
+    if (req.accepts(["html", "json"]) === "html") {
+        return res.status(404).render("shared/index", {
+            moduleName: "404",
+        });
+    }
 
     return res.status(404).json({
         ok: false,
@@ -128,7 +162,6 @@ app.use((err, req, res, _next) => {
         module: "server",
         action: "http_request",
         statusHttp: statusCode,
-        
         requestId: req.requestId || "",
         traceId: req.traceId || "",
         durationMs: req.startTime ? Date.now() - req.startTime : 0,
@@ -142,6 +175,12 @@ app.use((err, req, res, _next) => {
             stack: process.env.NODE_ENV !== "production" ? err?.stack : undefined,
         },
     });
+
+    if (req.accepts(["html", "json"]) === "html") {
+        return res.status(statusCode).render("shared/index", {
+            moduleName: publicMessage,
+        });
+    }
 
     return res.status(statusCode).json({
         ok: false,

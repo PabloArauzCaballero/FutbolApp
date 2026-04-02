@@ -1,6 +1,9 @@
-const router = require('./reservas.routes');
+const router = require("./reservas.routes");
+const viewRouter = require("./reservas.view.routes");
 
 module.exports = {
-    basePath: '/reservas',
+    basePath: "/reservas",
+    viewBasePath: "/reservas",
     router,
+    viewRouter,
 };

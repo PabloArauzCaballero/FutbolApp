@@ -1,57 +1,57 @@
-
-const {sha1Encode} = require("../../core/auth/text.utils");
-const {email: emailFldName, password: passwordFldName}= require("./module.prototype");
+const { sha1Encode } = require("../../core/auth/text.utils");
+const { email: emailFldName, password: passwordFldName } = require("./module.prototype");
 const repository = require("./auth.repository");
 
-async function register(payload){
+async function register(payload) {
     const user = await repository.login(payload[emailFldName]);
 
-    if(user.usuario){
+    if (user?.data) {
         return {
             ok: false,
-            message: "Usuario ya existente"
-        }
+            message: "Usuario ya existente",
+        };
     }
 
     const encodedPassword = sha1Encode(payload[passwordFldName]);
-    const newPayload = payload;
-    newPayload[passwordFldName] = encodedPassword;
-    
+    const newPayload = {
+        ...payload,
+        [passwordFldName]: encodedPassword,
+    };
 
     const newUser = await repository.register(newPayload);
-    
+
     return {
         ok: true,
-        data: newUser
+        data: newUser,
     };
 }
 
-async function login(email, password){
+async function login(email, password) {
     const user = await repository.login(email);
 
-    if(!user){
+    if (!user?.data) {
         return {
             ok: false,
-            message: "Usuario no encontrado"
-        }
+            message: "Usuario no encontrado",
+        };
     }
 
     const encodedPassword = sha1Encode(password);
 
-    if(password !== user.data[passwordFldName]){
+    if (encodedPassword !== user.data[passwordFldName]) {
         return {
             ok: false,
-            message: "Contraseña incorrecta"
-        }
+            message: "Contraseña incorrecta",
+        };
     }
-    
+
     return {
         ok: true,
-        result: user
+        result: user,
     };
 }
 
-module.exports = { 
+module.exports = {
     login,
     register,
-}
+};

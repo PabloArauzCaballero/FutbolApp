@@ -1,0 +1,27 @@
+body {
+    background: #f8f9fa;
+}
+
+.auth-shell {
+    min-height: 100vh;
+}
+
+.auth-card,
+.crud-card {
+    border: 0;
+    border-radius: 1rem;
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+    font-weight: 700;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+.sidebar-link.active {
+    font-weight: 700;
+}

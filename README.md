@@ -686,3 +686,188 @@ Dicho simple: no es solo una API CRUD; es una base de proyecto bien encaminada p
 ## Autor y contexto
 
 El proyecto está orientado a una app de gestión relacionada con fútbol y reserva/administración de canchas. La versión revisada refleja una evolución clara hacia una arquitectura más ordenada, más mantenible y más cercana a un estándar de backend serio.
+
+---
+
+## Frontend monolítico agregado
+
+Se añadió una capa de frontend basada en **Bootstrap 5**, **EJS** y una construcción **por configuración** para que no tengas que duplicar pantallas módulo por módulo.
+
+### Idea central
+
+El frontend se construye desde:
+
+```text
+frontend/index.js
+```
+
+En ese archivo defines como **variables de entrada**:
+
+- nombre de la app
+- ruta de login
+- ruta principal
+- módulos visibles en navegación
+- columnas de tabla
+- campos del formulario
+- endpoints API para crear, listar, editar y eliminar
+- selects estáticos y selects dinámicos cargados desde otras APIs
+
+Con esa configuración se generan las pantallas CRUD.
+
+### Estructura nueva
+
+```text
+frontend/
+├── index.js
+└── routerFactory.js
+
+public/
+├── css/
+│   └── app.css
+└── js/
+    ├── app.js
+    ├── auth.js
+    └── logout.js
+
+views/
+├── auth/
+│   └── login.ejs
+├── crud/
+│   └── page.ejs
+└── fragments/
+    ├── head.ejs
+    ├── navbar.ejs
+    ├── crud-form.ejs
+    ├── crud-table.ejs
+    └── footer-scripts.ejs
+```
+
+### Rutas de vista agregadas
+
+Ahora el proyecto tiene dos tipos de rutas:
+
+- **API** bajo `/api/...`
+- **Vistas** bajo rutas normales del monolito
+
+Ejemplos:
+
+- `/login`
+- `/tipoCancha`
+- `/canchas`
+- `/horarios`
+- `/personas`
+- `/reservas`
+- `/resenas`
+
+### Router por módulo
+
+Cada módulo ahora exporta:
+
+- `router` para API
+- `viewRouter` para render de la vista
+- `basePath`
+- `viewBasePath`
+
+Eso permite que el monolito sirva tanto el backend como la interfaz desde la misma app Express.
+
+### Fragmentos
+
+Se trabajó por fragmentos para que puedas modificar partes sin tocar toda la pantalla:
+
+- `head.ejs` para dependencias comunes
+- `navbar.ejs` para navegación y logout
+- `crud-form.ejs` para el formulario genérico
+- `crud-table.ejs` para la tabla genérica
+- `footer-scripts.ejs` para scripts compartidos
+
+### Login
+
+Se corrigió y dejó funcional el módulo `auth`:
+
+- `POST /api/auth/login`
+- `POST /api/auth/register`
+- `POST /api/auth/logout`
+
+Además se corrigieron errores reales que tenía la lógica:
+
+- validación de usuario inexistente
+- comparación de contraseña hasheada
+- chequeo de usuario duplicado al registrar
+- creación de sesión con datos consistentes
+
+### Middleware de sesión
+
+Se implementó `check-user.js` para que:
+
+- si la petición es HTML, redirija a `/login`
+- si la petición es API, responda `401`
+- si hay sesión, deje pasar
+
+### Usuarios
+
+La creación de usuarios desde la pantalla de `Usuarios` usa:
+
+```text
+/api/auth/register
+```
+
+porque el módulo `personas` ya estaba pensado más para listar/editar/eliminar, mientras que el alta con contraseña pertenece a autenticación.
+
+### Cómo agregar otro módulo al front
+
+Solo debes añadir un nuevo objeto dentro de `frontend/index.js` con esta forma:
+
+```js
+{
+  key: 'miModulo',
+  title: 'Mi módulo',
+  description: 'Descripción del módulo',
+  viewBasePath: '/miModulo',
+  apiBasePath: '/api/miModulo',
+  primaryKey: 'id',
+  createApiPath: '/api/miModulo',
+  updateApiPath: '/api/miModulo/:id',
+  deleteApiPath: '/api/miModulo/:id',
+  listApiPath: '/api/miModulo',
+  tableColumns: [
+    { key: 'id', label: 'ID' },
+    { key: 'nombre', label: 'Nombre' },
+  ],
+  formFields: [
+    { name: 'nombre', label: 'Nombre', type: 'text', required: true },
+  ],
+}
+```
+
+Si el campo depende de otra tabla, puedes usar `dataSource`:
+
+```js
+{
+  name: 'tipo_id',
+  label: 'Tipo',
+  type: 'select',
+  required: true,
+  dataSource: {
+    url: '/api/tipoCancha?offset=0&limit=100',
+    responsePath: 'data.items',
+    valueKey: 'id',
+    labelKey: 'nombre',
+  },
+}
+```
+
+---
+
+## Cómo levantar el proyecto
+
+```bash
+npm install
+npm run dev
+```
+
+Luego abre:
+
+```text
+http://localhost:3000/login
+```
+
