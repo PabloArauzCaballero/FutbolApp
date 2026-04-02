@@ -72,12 +72,12 @@ Futbol app upgrade/
 │   │   ├── validator.js
 │   │   ├── idValidator.js
 │   │   ├── listValidator.js
-│   │   ├── validateTaget.js
+│   │   ├── validateTarget.js
 │   │   └── validatePositiveNumberCallback.js
 │   └── utils/
 │       ├── getLayerContracts.js
 │       ├── processTarget.js
-│       └── strManagmentTool.js
+│       └── strManagementTool.js
 ├── logs/
 │   ├── index.js
 │   ├── logger.js
@@ -224,7 +224,7 @@ También soporta:
 
 - `allowPartial: true` para operaciones tipo `PATCH`
 
-### `normalizeTarget.js` y `validateTaget.js`
+### `normalizeTarget.js` y `validateTarget.js`
 Son wrappers simples que estandarizan la respuesta de normalización y validación.
 
 ### `processTarget.js`
@@ -669,7 +669,7 @@ Hay algunos puntos que conviene ajustar en futuras versiones:
 4. Separar dependencias de desarrollo (`nodemon`) en `devDependencies`.
 5. Agregar pruebas automáticas.
 6. Definir asociaciones explícitas de Sequelize si luego quieres includes más ricos.
-7. Corregir pequeños detalles de naming, por ejemplo `validateTaget.js` debería ser `validateTarget.js`.
+7. Mantener consistencia de naming en utilidades y validadores.
 8. Corregir mensajes menores de respuesta, por ejemplo `"Cancha listados exitosamente."` podría convertirse en `"Canchas listadas exitosamente."`.
 9. Completar o eliminar módulos placeholder que aún no están activos.
 

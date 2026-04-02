@@ -10,35 +10,44 @@
         <h1 class="h3 mb-1">Canchas</h1>
         <p class="text-muted mb-4">Crear, editar y eliminar canchas.</p>
 
-        <div id="admin-feedback" class="alert d-none" role="alert"></div>
+        <% if (feedback && feedback.message) { %>
+            <div class="alert alert-<%= feedback.type %>" role="alert"><%= feedback.message %></div>
+        <% } %>
 
         <section class="card mb-4">
             <div class="card-body">
                 <h2 class="h5 mb-3">Formulario</h2>
-                <form id="form-canchas" class="row g-3">
-                    <input type="hidden" id="cancha-id">
+                <form class="row g-3" method="post" action="<%= editItem ? `${currentPath}/update/${editItem.id}` : `${currentPath}/create` %>">
                     <div class="col-md-6">
                         <label class="form-label" for="cancha-nombre">Nombre</label>
-                        <input class="form-control" id="cancha-nombre" required>
+                        <input class="form-control" id="cancha-nombre" name="nombre" required value="<%= editItem ? editItem.nombre : '' %>">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="cancha-tipo">Tipo</label>
-                        <select class="form-select" id="cancha-tipo" required></select>
+                        <select class="form-select" id="cancha-tipo" name="tipo_id" required>
+                            <% (tipos || []).forEach((tipo) => { %>
+                                <option value="<%= tipo.id %>" <%= editItem && Number(editItem.tipo_id) === Number(tipo.id) ? 'selected' : '' %>>
+                                    <%= tipo.id %> - <%= tipo.nombre %>
+                                </option>
+                            <% }) %>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="cancha-precio">Precio por hora</label>
-                        <input class="form-control" id="cancha-precio" type="number" min="0" step="0.01" required>
+                        <input class="form-control" id="cancha-precio" name="precio_por_hora" type="number" min="0" step="0.01" required value="<%= editItem ? editItem.precio_por_hora : '' %>">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="cancha-estado">Estado</label>
-                        <select class="form-select" id="cancha-estado" required>
-                            <option value="activa">Activa</option>
-                            <option value="inactiva">Inactiva</option>
+                        <select class="form-select" id="cancha-estado" name="estado" required>
+                            <option value="activa" <%= editItem && editItem.estado === 'activa' ? 'selected' : '' %>>Activa</option>
+                            <option value="inactiva" <%= editItem && editItem.estado === 'inactiva' ? 'selected' : '' %>>Inactiva</option>
                         </select>
                     </div>
                     <div class="col-12 d-flex gap-2">
-                        <button class="btn btn-primary" type="submit">Guardar</button>
-                        <button class="btn btn-outline-secondary" id="cancelar-edicion-canchas" type="button">Cancelar edición</button>
+                        <button class="btn btn-primary" type="submit"><%= editItem ? 'Actualizar' : 'Crear' %></button>
+                        <% if (editItem) { %>
+                            <a class="btn btn-outline-secondary" href="<%= currentPath %>">Cancelar edición</a>
+                        <% } %>
                     </div>
                 </form>
             </div>
@@ -60,7 +69,24 @@
                             </tr>
                         </thead>
                         <tbody id="tabla-canchas-body">
-                            <tr><td colspan="6" class="text-center text-muted py-3">Cargando...</td></tr>
+                            <% if (!canchas || canchas.length === 0) { %>
+                                <tr><td colspan="6" class="text-center text-muted py-3">No hay registros.</td></tr>
+                            <% } %>
+                            <% (canchas || []).forEach((item) => { %>
+                                <tr>
+                                    <td><%= item.id %></td>
+                                    <td><%= item.nombre %></td>
+                                    <td><%= item.tipo_id %></td>
+                                    <td><%= item.precio_por_hora %></td>
+                                    <td><%= item.estado %></td>
+                                    <td class="d-flex gap-2">
+                                        <a class="btn btn-sm btn-outline-primary" href="<%= `${currentPath}?edit=${item.id}` %>">Editar</a>
+                                        <form method="post" action="<%= `${currentPath}/delete/${item.id}` %>" onsubmit="return confirm('¿Eliminar esta cancha?')">
+                                            <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -68,6 +94,6 @@
         </section>
     </main>
 
-    <%- include('../partials/footer', { pageScript }) %>
+    <%- include('../partials/footer') %>
 </body>
 </html>

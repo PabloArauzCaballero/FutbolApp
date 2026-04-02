@@ -12,11 +12,12 @@
             <p class="text-muted mb-0">Aquí puedes ver tu historial y cancelar reservas confirmadas.</p>
         </section>
 
-        <div id="cliente-feedback" class="alert d-none" role="alert"></div>
+        <% if (feedback && feedback.message) { %>
+            <div class="alert alert-<%= feedback.type %>" role="alert"><%= feedback.message %></div>
+        <% } %>
 
         <section class="card shadow-sm">
             <div class="card-body">
-                <button class="btn btn-outline-secondary btn-sm mb-3" id="recargar-reservas" type="button">Recargar</button>
                 <div class="table-responsive">
                     <table class="table table-striped align-middle mb-0">
                         <thead>
@@ -26,14 +27,41 @@
                                 <th>Fecha</th>
                                 <th>Hora Inicio</th>
                                 <th>Hora Fin</th>
+                                <th>Cancha</th>
                                 <th>Estado</th>
                                 <th>Acción</th>
                             </tr>
                         </thead>
-                        <tbody id="reservas-body">
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-3">Cargando reservas...</td>
-                            </tr>
+                        <tbody>
+                            <% if (!reservas || reservas.length === 0) { %>
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-3">No tienes reservas registradas.</td>
+                                </tr>
+                            <% } %>
+                            <% (reservas || []).forEach((reserva) => { %>
+                                <tr>
+                                    <td><%= reserva.id %></td>
+                                    <td><%= reserva.horario_id %></td>
+                                    <td><%= reserva.horario ? reserva.horario.fecha : '-' %></td>
+                                    <td><%= reserva.horario ? String(reserva.horario.hora_inicio || '').slice(0,5) : '-' %></td>
+                                    <td><%= reserva.horario ? String(reserva.horario.hora_fin || '').slice(0,5) : '-' %></td>
+                                    <td><%= reserva.cancha ? reserva.cancha.nombre : '-' %></td>
+                                    <td>
+                                        <span class="badge <%= reserva.estado === 'confirmada' ? 'bg-success' : 'bg-secondary' %>">
+                                            <%= reserva.estado %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <% if (reserva.estado === 'confirmada') { %>
+                                            <form method="post" action="/cliente/reservas/<%= reserva.id %>/cancelar" onsubmit="return confirm('¿Cancelar esta reserva?')">
+                                                <button class="btn btn-sm btn-outline-danger" type="submit">Cancelar</button>
+                                            </form>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -41,12 +69,6 @@
         </section>
     </main>
 
-    <script>
-        window.__CLIENT_CONTEXT__ = {
-            userId: <%- JSON.stringify(currentUser?.id || null) %>,
-            defaultLimit: <%- JSON.stringify(appConfig.defaultListLimit) %>,
-        };
-    </script>
-    <%- include('../partials/footer', { pageScript: '/public/js/client-reservas.js' }) %>
+    <%- include('../partials/footer') %>
 </body>
 </html>

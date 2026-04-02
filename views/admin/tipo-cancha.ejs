@@ -10,20 +10,23 @@
         <h1 class="h3 mb-1">Tipos de cancha</h1>
         <p class="text-muted mb-4">Crear, editar y eliminar tipos.</p>
 
-        <div id="admin-feedback" class="alert d-none" role="alert"></div>
+        <% if (feedback && feedback.message) { %>
+            <div class="alert alert-<%= feedback.type %>" role="alert"><%= feedback.message %></div>
+        <% } %>
 
         <section class="card mb-4">
             <div class="card-body">
                 <h2 class="h5 mb-3">Formulario</h2>
-                <form id="form-tipo-cancha" class="row g-3">
-                    <input type="hidden" id="tipo-cancha-id">
+                <form class="row g-3" method="post" action="<%= editItem ? `${currentPath}/update/${editItem.id}` : `${currentPath}/create` %>">
                     <div class="col-md-8">
                         <label class="form-label" for="tipo-cancha-nombre">Nombre</label>
-                        <input class="form-control" id="tipo-cancha-nombre" required>
+                        <input class="form-control" id="tipo-cancha-nombre" name="nombre" required value="<%= editItem ? editItem.nombre : '' %>">
                     </div>
                     <div class="col-12 d-flex gap-2">
-                        <button class="btn btn-primary" type="submit">Guardar</button>
-                        <button class="btn btn-outline-secondary" id="cancelar-edicion-tipo-cancha" type="button">Cancelar edición</button>
+                        <button class="btn btn-primary" type="submit"><%= editItem ? 'Actualizar' : 'Crear' %></button>
+                        <% if (editItem) { %>
+                            <a class="btn btn-outline-secondary" href="<%= currentPath %>">Cancelar edición</a>
+                        <% } %>
                     </div>
                 </form>
             </div>
@@ -42,7 +45,21 @@
                             </tr>
                         </thead>
                         <tbody id="tabla-tipo-cancha-body">
-                            <tr><td colspan="3" class="text-center text-muted py-3">Cargando...</td></tr>
+                            <% if (!items || items.length === 0) { %>
+                                <tr><td colspan="3" class="text-center text-muted py-3">No hay registros.</td></tr>
+                            <% } %>
+                            <% (items || []).forEach((item) => { %>
+                                <tr>
+                                    <td><%= item.id %></td>
+                                    <td><%= item.nombre %></td>
+                                    <td class="d-flex gap-2">
+                                        <a class="btn btn-sm btn-outline-primary" href="<%= `${currentPath}?edit=${item.id}` %>">Editar</a>
+                                        <form method="post" action="<%= `${currentPath}/delete/${item.id}` %>" onsubmit="return confirm('¿Eliminar este registro?')">
+                                            <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -50,6 +67,6 @@
         </section>
     </main>
 
-    <%- include('../partials/footer', { pageScript }) %>
+    <%- include('../partials/footer') %>
 </body>
 </html>

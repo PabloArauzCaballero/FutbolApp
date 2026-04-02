@@ -12,29 +12,60 @@
             <p class="text-muted mb-0">Puedes dejar reseñas solo de reservas que ya pasaron.</p>
         </section>
 
-        <div id="cliente-feedback" class="alert d-none" role="alert"></div>
+        <% if (feedback && feedback.message) { %>
+            <div class="alert alert-<%= feedback.type %>" role="alert"><%= feedback.message %></div>
+        <% } %>
 
         <section class="card shadow-sm mb-4">
             <div class="card-body">
                 <h2 class="h5 mb-3">Reservas finalizadas sin reseña</h2>
-                <div id="resenas-pendientes-list" class="text-muted">Cargando...</div>
+                <% if (!resenasPendientes || resenasPendientes.length === 0) { %>
+                    <p class="text-muted mb-0">No tienes reseñas pendientes.</p>
+                <% } %>
+                <% (resenasPendientes || []).forEach((item) => { %>
+                    <form class="border rounded p-3 mb-3" method="post" action="/cliente/resenas/create">
+                        <input type="hidden" name="cancha_id" value="<%= item.canchaId %>">
+                        <h3 class="h6 mb-1"><%= item.cancha ? item.cancha.nombre : `Cancha ${item.canchaId}` %></h3>
+                        <p class="text-muted small mb-3">Reserva finalizada desde: <%= item.fecha %></p>
+                        <div class="mb-2">
+                            <label class="form-label">Calificación</label>
+                            <select class="form-select" name="calificacion" required>
+                                <option value="5">5</option>
+                                <option value="4">4</option>
+                                <option value="3">3</option>
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Comentario</label>
+                            <textarea class="form-control" name="comentario" rows="3" minlength="3" maxlength="500" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Guardar reseña</button>
+                    </form>
+                <% }) %>
             </div>
         </section>
 
         <section class="card shadow-sm">
             <div class="card-body">
                 <h2 class="h5 mb-3">Mis reseñas registradas</h2>
-                <div id="mis-resenas-list" class="text-muted">Cargando...</div>
+                <% if (!misResenas || misResenas.length === 0) { %>
+                    <p class="text-muted mb-0">Todavía no registraste reseñas.</p>
+                <% } %>
+                <% (misResenas || []).forEach((resena) => { %>
+                    <div class="border rounded p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong><%= resena.cancha ? resena.cancha.nombre : `Cancha ${resena.cancha_id}` %></strong>
+                            <span class="badge bg-primary"><%= resena.calificacion %>/5</span>
+                        </div>
+                        <p class="mb-0"><%= resena.comentario %></p>
+                    </div>
+                <% }) %>
             </div>
         </section>
     </main>
 
-    <script>
-        window.__CLIENT_CONTEXT__ = {
-            userId: <%- JSON.stringify(currentUser?.id || null) %>,
-            defaultLimit: <%- JSON.stringify(appConfig.defaultListLimit) %>,
-        };
-    </script>
-    <%- include('../partials/footer', { pageScript: '/public/js/client-resenas.js' }) %>
+    <%- include('../partials/footer') %>
 </body>
 </html>

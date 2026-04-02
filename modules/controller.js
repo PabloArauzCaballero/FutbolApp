@@ -1,8 +1,8 @@
-const { toSnakeCase, capitalizeFirstLetter } = require("../core/utils/strManagmentTool");
+const { toSnakeCase, capitalizeFirstLetter } = require("../core/utils/strManagementTool");
 const { getLayerContracts } = require("../core/utils/getLayerContracts");
 const { processTarget } = require("../core/utils/processTarget");
 const { normalize } = require("../core/normalizer/normalizeTarget");
-const { validate } = require("../core/validator/validateTaget");
+const { validate } = require("../core/validator/validateTarget");
 const {
     logError,
     logInfo,

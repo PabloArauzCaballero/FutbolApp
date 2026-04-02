@@ -6,12 +6,12 @@ const frontendConfig = {
     homePath: "/dashboard",
     defaultListLimit: 100,
     adminPages: [
-        { key: "tipoCancha", title: "Tipos de cancha", href: "/admin/tipoCancha", view: "admin/tipo-cancha", script: "/public/js/admin-tipo-cancha.js" },
-        { key: "canchas", title: "Canchas", href: "/admin/canchas", view: "admin/canchas", script: "/public/js/admin-canchas.js" },
-        { key: "horarios", title: "Horarios", href: "/admin/horarios", view: "admin/horarios", script: "/public/js/admin-horarios.js" },
-        { key: "personas", title: "Usuarios", href: "/admin/personas", view: "admin/personas", script: "/public/js/admin-personas.js" },
-        { key: "reservas", title: "Reservas", href: "/admin/reservas", view: "admin/reservas", script: "/public/js/admin-reservas.js" },
-        { key: "resenas", title: "Reseñas", href: "/admin/resenas", view: "admin/resenas", script: "/public/js/admin-resenas.js" },
+        { key: "tipoCancha", title: "Tipos de cancha", href: "/admin/tipoCancha", view: "admin/tipo-cancha" },
+        { key: "canchas", title: "Canchas", href: "/admin/canchas", view: "admin/canchas" },
+        { key: "horarios", title: "Horarios", href: "/admin/horarios", view: "admin/horarios" },
+        { key: "personas", title: "Usuarios", href: "/admin/personas", view: "admin/personas" },
+        { key: "reservas", title: "Reservas", href: "/admin/reservas", view: "admin/reservas" },
+        { key: "resenas", title: "Reseñas", href: "/admin/resenas", view: "admin/resenas" },
     ],
     clientPages: [
         { key: "cliente-canchas", title: "Canchas", href: "/cliente/canchas" },

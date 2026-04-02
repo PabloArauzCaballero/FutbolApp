@@ -1,160 +1,49 @@
-const express = require('express');
-const {
-    frontendConfig,
-    getAdminModuleConfigByKey,
-    getAdminNavigationItems,
-    getClientNavigationItems,
-} = require('./index');
-const { requireRole } = require('../middlewares/require-role');
+const express = require("express");
+
+const { createAuthViewRouter: createAuthRoute } = require("./routes/auth.view.routes");
+const { createDashboardViewRouter } = require("./routes/dashboard.view.routes");
+
+const { createCanchasAdminViewRouter } = require("./routes/admin/canchas.view.routes");
+const { createTipoCanchaAdminViewRouter } = require("./routes/admin/tipo-cancha.view.routes");
+const { createHorariosAdminViewRouter } = require("./routes/admin/horarios.view.routes");
+const { createPersonasAdminViewRouter } = require("./routes/admin/personas.view.routes");
+const { createReservasAdminViewRouter } = require("./routes/admin/reservas.view.routes");
+const { createResenasAdminViewRouter } = require("./routes/admin/resenas.view.routes");
+
+const { createClienteCanchasViewRouter } = require("./routes/cliente/canchas.view.routes");
+const { createClienteReservasViewRouter } = require("./routes/cliente/reservas.view.routes");
+const { createClienteResenasViewRouter } = require("./routes/cliente/resenas.view.routes");
+
+const adminRouterFactoryByModule = {
+    canchas: createCanchasAdminViewRouter,
+    tipoCancha: createTipoCanchaAdminViewRouter,
+    horarios: createHorariosAdminViewRouter,
+    personas: createPersonasAdminViewRouter,
+    reservas: createReservasAdminViewRouter,
+    resenas: createResenasAdminViewRouter,
+};
 
 function createCrudViewRouter(moduleKey) {
-    const router = express.Router();
-    const pageConfig = getAdminModuleConfigByKey(moduleKey);
+    const buildRouter = adminRouterFactoryByModule[moduleKey];
 
-    if (!pageConfig) {
+    if (!buildRouter) {
         throw new Error(`No existe configuración frontend para el módulo: ${moduleKey}`);
     }
 
-    router.get('/', requireRole('admin'), (req, res) => {
-        return res.render(pageConfig.view, {
-            appConfig: frontendConfig,
-            navigationItems: getAdminNavigationItems(),
-            currentUser: req.session?.user || null,
-            currentPath: pageConfig.href,
-            pageTitle: pageConfig.title,
-            pageScript: pageConfig.script,
-        });
-    });
-
-    return router;
+    return buildRouter();
 }
 
 function createAuthViewRouter() {
-    const router = express.Router();
-
-    router.get('/', (req, res) => {
-        if (req.session?.user) {
-            return res.redirect(frontendConfig.homePath);
-        }
-
-        return res.render('auth/login', {
-            appConfig: frontendConfig,
-            currentUser: req.session?.user || null,
-            pageTitle: 'Acceso',
-        });
-    });
-
-    return router;
+    return createAuthRoute();
 }
 
 function createMainViewRouter() {
     const router = express.Router();
 
-    function getCurrentUser(req) {
-        return req.session?.user || null;
-    }
-
-    router.get('/canchas', (req, res) => {
-        const currentUser = getCurrentUser(req);
-
-        if (!currentUser) {
-            return res.redirect('/login');
-        }
-
-        if (currentUser.rol === 'admin') {
-            return res.redirect('/admin/canchas');
-        }
-
-        return res.redirect('/cliente/canchas');
-    });
-
-    router.get('/reservas', (req, res) => {
-        const currentUser = getCurrentUser(req);
-
-        if (!currentUser) {
-            return res.redirect('/login');
-        }
-
-        if (currentUser.rol === 'admin') {
-            return res.redirect('/admin/reservas');
-        }
-
-        return res.redirect('/cliente/reservas');
-    });
-
-    router.get('/resenas', (req, res) => {
-        const currentUser = getCurrentUser(req);
-
-        if (!currentUser) {
-            return res.redirect('/login');
-        }
-
-        if (currentUser.rol === 'admin') {
-            return res.redirect('/admin/resenas');
-        }
-
-        return res.redirect('/cliente/resenas');
-    });
-
-    router.get('/tipoCancha', requireRole('admin'), (_req, res) => {
-        return res.redirect('/admin/tipoCancha');
-    });
-
-    router.get('/horarios', requireRole('admin'), (_req, res) => {
-        return res.redirect('/admin/horarios');
-    });
-
-    router.get('/personas', requireRole('admin'), (_req, res) => {
-        return res.redirect('/admin/personas');
-    });
-
-    router.get('/dashboard', (req, res) => {
-        if (!req.session?.user) {
-            return res.redirect('/login');
-        }
-
-        const userRole = req.session?.user?.rol;
-
-        if (userRole === 'admin') {
-            return res.redirect('/admin/tipoCancha');
-        }
-
-        return res.redirect('/cliente/canchas');
-    });
-
-    router.get('/cliente', requireRole('cliente'), (_req, res) => {
-        return res.redirect('/cliente/canchas');
-    });
-
-    router.get('/cliente/canchas', requireRole('cliente'), (req, res) => {
-        return res.render('cliente/canchas', {
-            appConfig: frontendConfig,
-            navigationItems: getClientNavigationItems(),
-            currentUser: req.session?.user || null,
-            currentPath: '/cliente/canchas',
-            pageTitle: 'Canchas disponibles',
-        });
-    });
-
-    router.get('/cliente/reservas', requireRole('cliente'), (req, res) => {
-        return res.render('cliente/reservas', {
-            appConfig: frontendConfig,
-            navigationItems: getClientNavigationItems(),
-            currentUser: req.session?.user || null,
-            currentPath: '/cliente/reservas',
-            pageTitle: 'Mis reservas',
-        });
-    });
-
-    router.get('/cliente/resenas', requireRole('cliente'), (req, res) => {
-        return res.render('cliente/resenas', {
-            appConfig: frontendConfig,
-            navigationItems: getClientNavigationItems(),
-            currentUser: req.session?.user || null,
-            currentPath: '/cliente/resenas',
-            pageTitle: 'Mis reseñas',
-        });
-    });
+    router.use(createDashboardViewRouter());
+    router.use(createClienteCanchasViewRouter());
+    router.use(createClienteReservasViewRouter());
+    router.use(createClienteResenasViewRouter());
 
     return router;
 }

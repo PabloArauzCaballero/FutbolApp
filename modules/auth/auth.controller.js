@@ -2,7 +2,7 @@ const authService = require("./auth.service");
 
 const { processTarget } = require("../../core/utils/processTarget");
 const { normalize } = require("../../core/normalizer/normalizeTarget");
-const { validate } = require("../../core/validator/validateTaget");
+const { validate } = require("../../core/validator/validateTarget");
 const {
     logError,
     logInfo,

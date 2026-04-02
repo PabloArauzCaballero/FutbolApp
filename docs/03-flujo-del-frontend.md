@@ -1,109 +1,76 @@
-# Flujo del frontend
+# Flujo del frontend (actual)
 
-Esta aplicacion no termina en el backend. La experiencia real del usuario pasa por EJS y por varios scripts en `public/js/` que hacen fetch a la API.
+El frontend es server-side con EJS.  
+No usa CRUD genérico por JS en admin ni scripts `client-*.js` en cliente.
 
-## Configuracion de vistas
+## Configuración
 
-[frontend/index.js](../frontend/index.js) define toda la navegacion visible:
+[frontend/index.js](../frontend/index.js) define:
 
-- `appName` y `brand`;
-- `loginPath`, `logoutPath` y `homePath`;
-- `defaultListLimit`;
-- `adminModules` con la configuracion de cada CRUD;
-- `clientPages` con las paginas del cliente.
+- nombre de app;
+- rutas principales;
+- páginas de admin;
+- páginas de cliente.
 
-Eso hace que las pantallas no esten hardcodeadas una por una.
+## Organización
 
-## routerFactory
+La lógica de vistas está separada por capas:
 
-[frontend/routerFactory.js](../frontend/routerFactory.js) crea tres routers de vistas:
+- `frontend/routes/*`: rutas de vistas;
+- `frontend/services/*`: carga y escritura de datos para vistas;
+- `frontend/helpers/view-utils.js`: utilidades compartidas;
+- `views/*`: plantillas EJS.
 
-- `createAuthViewRouter()` para `/login`;
-- `createMainViewRouter()` para `/dashboard`, `/cliente/*` y redirecciones generales;
-- `createCrudViewRouter(moduleKey)` para las paginas CRUD de admin.
+## Rutas de vistas
 
-Este archivo es la bisagra entre la configuracion y las plantillas EJS.
+- Auth: [frontend/routes/auth.view.routes.js](../frontend/routes/auth.view.routes.js)
+- Dashboard y redirecciones: [frontend/routes/dashboard.view.routes.js](../frontend/routes/dashboard.view.routes.js)
+- Admin por módulo: `frontend/routes/admin/*`
+- Cliente: `frontend/routes/cliente/*`
 
-## Login y registro
+`frontend/routerFactory.js` solo compone routers.
 
-La pantalla principal de auth es [views/auth/login.ejs](../views/auth/login.ejs).
+## Flujo en admin
 
-Flujo:
+1. `GET /admin/<modulo>` carga datos y renderiza la vista EJS.
+2. Formulario de alta: `POST /admin/<modulo>/create`
+3. Formulario de edición: `POST /admin/<modulo>/update/:id`
+4. Formulario de eliminación: `POST /admin/<modulo>/delete/:id`
+5. Después de cada acción se redirige con `?msg=...&type=...`.
 
-1. la vista carga `window.__APP_CONFIG__`;
-2. [public/js/auth.js](../public/js/auth.js) escucha los submits de login y registro;
-3. login hace `POST /api/auth/login`;
-4. registro hace `POST /api/auth/register`;
-5. si el login sale bien, el navegador va a `homePath`;
-6. si falla, muestra el mensaje en pantalla.
+Todo esto se implementa en:
 
-El logout es simple: [public/js/logout.js](../public/js/logout.js) llama `POST /api/auth/logout` y luego redirige a `/login`.
+- [frontend/routes/admin/create-admin-module-view-router.js](../frontend/routes/admin/create-admin-module-view-router.js)
+- [frontend/services/admin-view.service.js](../frontend/services/admin-view.service.js)
 
-## Pantallas admin
+## Flujo en cliente
 
-Las vistas CRUD de admin se renderizan en [views/admin/crud.ejs](../views/admin/crud.ejs).
+### Canchas
 
-Esa vista inyecta:
+- `GET /cliente/canchas` muestra canchas activas.
+- `GET /cliente/canchas/:id` muestra horarios disponibles y reseñas.
+- `POST /cliente/reservas/create` crea reserva y bloquea horario.
 
-- `window.__APP_CONFIG__`;
-- `window.__CRUD_CONFIG__`.
+### Reservas
 
-Despues carga [public/js/app.js](../public/js/app.js), que hace todo el trabajo de interfaz generica:
+- `GET /cliente/reservas` lista reservas del usuario.
+- `POST /cliente/reservas/:id/cancelar` cancela reserva y libera horario.
 
-- llena selects con datos de otras APIs;
-- lista registros con `GET`;
-- crea con `POST`;
-- edita con `PATCH`;
-- elimina con `DELETE`;
-- cambia entre modo creacion y modo edicion;
-- muestra feedback de error o exito.
+### Reseñas
 
-O sea: la vista no sabe nada del modulo concreto. Solo lee `pageConfig`.
+- `GET /cliente/resenas` muestra reseñas pendientes y registradas.
+- `POST /cliente/resenas/create` guarda reseña.
 
-## Pantallas de cliente
+Todo esto se implementa en:
 
-Las paginas de cliente son:
+- [frontend/routes/cliente/canchas.view.routes.js](../frontend/routes/cliente/canchas.view.routes.js)
+- [frontend/routes/cliente/reservas.view.routes.js](../frontend/routes/cliente/reservas.view.routes.js)
+- [frontend/routes/cliente/resenas.view.routes.js](../frontend/routes/cliente/resenas.view.routes.js)
+- [frontend/services/cliente-view.service.js](../frontend/services/cliente-view.service.js)
 
-- [views/cliente/canchas.ejs](../views/cliente/canchas.ejs)
-- [views/cliente/reservas.ejs](../views/cliente/reservas.ejs)
-- [views/cliente/resenas.ejs](../views/cliente/resenas.ejs)
+## Plantillas activas
 
-Cada una inyecta `window.__CLIENT_CONTEXT__` y carga un script distinto:
-
-- [public/js/client-canchas.js](../public/js/client-canchas.js)
-- [public/js/client-reservas.js](../public/js/client-reservas.js)
-- [public/js/client-resenas.js](../public/js/client-resenas.js)
-
-### `client-canchas.js`
-
-- carga canchas, tipos, horarios y reseñas;
-- deja seleccionar una cancha;
-- filtra horarios por fecha;
-- reserva un horario con `POST /api/reservas`;
-- marca ese horario como no disponible con `PATCH /api/horarios/:id`.
-
-### `client-reservas.js`
-
-- carga reservas y horarios;
-- muestra solo las reservas del usuario actual;
-- permite cancelar reservas confirmadas;
-- al cancelar, actualiza la reserva y vuelve a liberar el horario.
-
-### `client-resenas.js`
-
-- carga reservas, horarios, canchas y reseñas;
-- detecta reservas ya finalizadas sin reseña;
-- permite registrar una reseña nueva;
-- muestra las reseñas ya creadas por el usuario.
-
-## Como termina el flujo en el navegador
-
-El flujo visual termina cuando el script de cada pagina:
-
-- recibe `DOMContentLoaded`;
-- carga datos iniciales;
-- pinta la tabla o tarjeta;
-- responde a clicks y submits;
-- refresca el estado despues de cada accion.
-
-En otras palabras, el frontend no solo renderiza: tambien reacciona y vuelve a pedir datos a la API.
+- Auth: [views/auth/login.ejs](../views/auth/login.ejs)
+- Admin: `views/admin/*.ejs`
+- Cliente: `views/cliente/*.ejs`
+- Partials: [views/partials](../views/partials)

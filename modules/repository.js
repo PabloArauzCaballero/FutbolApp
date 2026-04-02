@@ -1,4 +1,4 @@
-const { toSnakeCase } = require('../core/utils/strManagmentTool');
+const { toSnakeCase } = require('../core/utils/strManagementTool');
 const {
     logRepoInfo,
     logRepoError,
