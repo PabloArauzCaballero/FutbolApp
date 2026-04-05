@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Editar Reserva #<%= reserva.id %></h1>
+            <a href="/reservas" class="btn btn-outline">Volver</a>
+        </div>
+
+        <% if (error) { %>
+            <div class="flash error"><%= error %></div>
+        <% } %>
+
+        <div class="card" style="max-width:500px;">
+            <form method="POST" action="/reservas/<%= reserva.id %>/editar">
+                <div class="form-group">
+                    <label for="estado">Estado de la Reserva</label>
+                    <select id="estado" name="estado" required>
+                        <option value="Confirmada" <%= reserva.estado === 'Confirmada' ? 'selected' : '' %>>Confirmada</option>
+                        <option value="Cancelada" <%= reserva.estado === 'Cancelada' ? 'selected' : '' %>>Cancelada</option>
+                    </select>
+                </div>
+
+                <% if (user.rol === 'admin') { %>
+                <div class="form-group">
+                    <label for="usuario_id">Cliente</label>
+                    <select id="usuario_id" name="usuario_id" required>
+                        <% personas.forEach(function(p) { %>
+                            <option value="<%= p.id %>" <%= reserva.usuario_id == p.id ? 'selected' : '' %>>
+                                <%= p.nombre %> (<%= p.email %>)
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="horario_id">Horario</label>
+                    <select id="horario_id" name="horario_id" required>
+                        <% horarios.forEach(function(h) { %>
+                            <option value="<%= h.id %>" <%= reserva.horario_id == h.id ? 'selected' : '' %>>
+                                <%= h.fecha %> | <%= h.hora_inicio %>-<%= h.hora_fin %> | <%= h.cancha ? h.cancha.nombre : 'N/A' %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <% } else { %>
+                    <input type="hidden" name="usuario_id" value="<%= reserva.usuario_id %>">
+                    <input type="hidden" name="horario_id" value="<%= reserva.horario_id %>">
+                <% } %>
+
+                <div style="background:#18181b; padding:1rem; border-radius:8px; margin-bottom:1rem;">
+                    <p style="margin:0; color:var(--text-muted); font-size:0.875rem;">
+                        <strong>Reserva actual:</strong><br>
+                        Cancha: <%= reserva.horario && reserva.horario.cancha ? reserva.horario.cancha.nombre : 'N/A' %><br>
+                        Fecha: <%= reserva.horario ? reserva.horario.fecha : 'N/A' %><br>
+                        Horario: <%= reserva.horario ? reserva.horario.hora_inicio + ' - ' + reserva.horario.hora_fin : 'N/A' %>
+                    </p>
+                </div>
+
+                <button type="submit" class="btn btn-success" style="width:100%;">
+                    Actualizar Reserva
+                </button>
+            </form>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

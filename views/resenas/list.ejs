@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Reseñas</h1>
+            <a href="/resenas/nueva" class="btn btn-success">+ Nueva Reseña</a>
+        </div>
+
+        <% if (flash && flash.success) { %>
+            <div class="flash success"><%= flash.success %></div>
+        <% } %>
+        <% if (flash && flash.error) { %>
+            <div class="flash error"><%= flash.error %></div>
+        <% } %>
+
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cancha</th>
+                            <% if (user.rol === 'admin') { %>
+                            <th>Usuario</th>
+                            <% } %>
+                            <th>Calificación</th>
+                            <th>Comentario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% resenas.forEach(function(r) { %>
+                        <tr>
+                            <td><%= (r.cancha) ? r.cancha.nombre : 'N/A' %></td>
+                            <% if (user.rol === 'admin') { %>
+                            <td><%= (r.usuario) ? r.usuario.nombre : 'N/A' %></td>
+                            <% } %>
+                            <td>
+                                <% for (let i = 0; i < 5; i++) { %>
+                                    <span style="color: <%= i < r.calificacion ? '#eab308' : '#3f3f46' %>;">★</span>
+                                <% } %>
+                            </td>
+                            <td><%= r.comentario %></td>
+                            <td>
+                                <a href="/resenas/<%= r.id %>/editar" class="btn btn-outline" style="padding:0.2rem 0.5rem; font-size:0.8rem;">Editar</a>
+                                <a href="/resenas/<%= r.id %>/eliminar" class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.8rem;"
+                                   onclick="return confirm('Eliminar esta reseña?');">Eliminar</a>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <% if (resenas.length === 0) { %>
+                <p style="text-align:center; padding:2rem; color:var(--text-muted);">No hay reseñas registradas.</p>
+                <div style="text-align:center;">
+                    <a href="/resenas/nueva" class="btn btn-success">Escribir Primera Reseña</a>
+                </div>
+            <% } %>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

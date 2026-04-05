@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Nueva Reserva</h1>
+            <a href="/reservas" class="btn btn-outline">Volver</a>
+        </div>
+
+        <% if (flash && flash.error) { %>
+            <div class="flash error"><%= flash.error %></div>
+        <% } %>
+
+        <div class="card" style="max-width:500px;">
+            <form method="POST" action="/reservas/nueva">
+                <div class="form-group">
+                    <label for="cancha_id">Cancha</label>
+                    <select id="cancha_id" name="cancha_id" required>
+                        <option value="">Seleccionar cancha...</option>
+                        <% canchas.forEach(function(c) { %>
+                            <option value="<%= c.id %>" <%= selectedCancha == c.id ? 'selected' : '' %>>
+                                <%= c.nombre %> (Bs. <%= c.precio_por_hora %>/hora)
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="horario_id">Horario disponible</label>
+                    <select id="horario_id" name="horario_id" required>
+                        <option value="">Primero selecciona una cancha...</option>
+                    </select>
+                </div>
+                <div id="horario-info" class="card" style="display:none; margin-top:0.75rem; background:#18181b;">
+                    <p style="margin:0.25rem 0;"><strong>Fecha:</strong> <span id="info-fecha"></span></p>
+                    <p style="margin:0.25rem 0;"><strong>Hora:</strong> <span id="info-hora"></span></p>
+                </div>
+                <button type="submit" class="btn btn-success" style="width:100%; margin-top:0.5rem;">
+                    Confirmar Reserva
+                </button>
+            </form>
+        </div>
+
+        <script>
+            // Datos de horarios inyectados desde el servidor
+            const horariosDisponibles = <%- JSON.stringify(horarios.filter(h => h.disponible)) %>;
+            
+            const canchaSelect = document.getElementById('cancha_id');
+            const horarioSelect = document.getElementById('horario_id');
+            const horarioInfo = document.getElementById('horario-info');
+            const infoFecha = document.getElementById('info-fecha');
+            const infoHora = document.getElementById('info-hora');
+
+            function filtrarHorarios(canchaId) {
+                horarioSelect.innerHTML = '<option value="">Seleccionar horario...</option>';
+                horarioInfo.style.display = 'none';
+                
+                if (!canchaId) {
+                    horarioSelect.innerHTML = '<option value="">Primero selecciona una cancha...</option>';
+                    return;
+                }
+
+                const horariosFiltrados = horariosDisponibles.filter(h => h.cancha_id == canchaId);
+                
+                if (horariosFiltrados.length === 0) {
+                    horarioSelect.innerHTML = '<option value="">No hay horarios disponibles</option>';
+                    return;
+                }
+
+                horariosFiltrados.forEach(function(h) {
+                    const opt = document.createElement('option');
+                    opt.value = h.id;
+                    opt.textContent = h.fecha + ' | ' + h.hora_inicio + ' - ' + h.hora_fin;
+                    opt.dataset.fecha = h.fecha;
+                    opt.dataset.hora = h.hora_inicio + ' - ' + h.hora_fin;
+                    horarioSelect.appendChild(opt);
+                });
+            }
+
+            canchaSelect.addEventListener('change', function() {
+                filtrarHorarios(this.value);
+            });
+
+            horarioSelect.addEventListener('change', function() {
+                const selected = this.options[this.selectedIndex];
+                if (selected && selected.value) {
+                    infoFecha.textContent = selected.dataset.fecha || '';
+                    infoHora.textContent = selected.dataset.hora || '';
+                    horarioInfo.style.display = 'block';
+                } else {
+                    horarioInfo.style.display = 'none';
+                }
+            });
+
+            // Si hay cancha preseleccionada, cargar sus horarios
+            if (canchaSelect.value) {
+                filtrarHorarios(canchaSelect.value);
+            }
+        </script>
+    </main>
+</body>
+</html>

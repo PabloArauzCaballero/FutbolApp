@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1><%= isEdit ? 'Editar Reseña' : 'Nueva Reseña' %></h1>
+            <a href="/resenas" class="btn btn-outline">Volver</a>
+        </div>
+
+        <% if (error) { %>
+            <div class="flash error"><%= error %></div>
+        <% } %>
+
+        <div class="card" style="max-width:500px;">
+            <form method="POST" action="<%= isEdit ? '/resenas/' + resena.id + '/editar' : '/resenas/nueva' %>">
+                <% if (user.rol === 'admin') { %>
+                <div class="form-group">
+                    <label for="usuario_id">Usuario</label>
+                    <select id="usuario_id" name="usuario_id" required>
+                        <option value="">Seleccionar usuario...</option>
+                        <% personas.forEach(function(p) { %>
+                            <option value="<%= p.id %>" <%= resena && resena.usuario_id == p.id ? 'selected' : '' %>>
+                                <%= p.nombre %> (<%= p.email %>)
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <% } else { %>
+                    <input type="hidden" name="usuario_id" value="<%= user.id %>">
+                <% } %>
+                
+                <div class="form-group">
+                    <label for="cancha_id">Cancha</label>
+                    <select id="cancha_id" name="cancha_id" required>
+                        <option value="">Seleccionar cancha...</option>
+                        <% canchas.forEach(function(c) { %>
+                            <option value="<%= c.id %>" <%= resena && resena.cancha_id == c.id ? 'selected' : '' %>>
+                                <%= c.nombre %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="calificacion">Calificación (1-5)</label>
+                    <input type="number" id="calificacion" name="calificacion" min="1" max="5" required
+                           value="<%= resena ? resena.calificacion : '' %>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="comentario">Comentario</label>
+                    <textarea id="comentario" name="comentario" rows="4" required><%= resena ? resena.comentario : '' %></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-success" style="width:100%;">
+                    <%= isEdit ? 'Actualizar' : 'Publicar' %> Reseña
+                </button>
+            </form>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

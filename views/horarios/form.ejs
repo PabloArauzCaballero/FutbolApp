@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1><%= isEdit ? 'Editar Horario' : 'Nuevo Horario' %></h1>
+            <a href="/horarios" class="btn btn-outline">Volver</a>
+        </div>
+
+        <% if (error) { %>
+            <div class="flash error"><%= error %></div>
+        <% } %>
+
+        <div class="card" style="max-width:500px;">
+            <form method="POST" action="<%= isEdit ? '/horarios/' + horario.id + '/editar' : '/horarios/nuevo' %>">
+                <div class="form-group">
+                    <label for="cancha_id">Cancha</label>
+                    <select id="cancha_id" name="cancha_id" required>
+                        <option value="">Seleccionar...</option>
+                        <% canchas.forEach(function(c) { %>
+                            <option value="<%= c.id %>" <%= horario && horario.cancha_id == c.id ? 'selected' : '' %>>
+                                <%= c.nombre %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fecha">Fecha</label>
+                    <input type="date" id="fecha" name="fecha" required
+                           value="<%= horario ? horario.fecha : '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="hora_inicio">Hora Inicio</label>
+                    <input type="time" id="hora_inicio" name="hora_inicio" required
+                           value="<%= horario ? horario.hora_inicio : '08:00' %>">
+                </div>
+                <div class="form-group">
+                    <label for="hora_fin">Hora Fin</label>
+                    <input type="time" id="hora_fin" name="hora_fin" required
+                           value="<%= horario ? horario.hora_fin : '09:00' %>">
+                </div>
+                <div class="form-group">
+                    <label>Disponible</label>
+                    <select id="disponible" name="disponible">
+                        <option value="true" <%= !horario || horario.disponible ? 'selected' : '' %>>Si</option>
+                        <option value="false" <%= horario && !horario.disponible ? 'selected' : '' %>>No</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success" style="width:100%;">
+                    <%= isEdit ? 'Actualizar' : 'Crear' %> Horario
+                </button>
+            </form>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

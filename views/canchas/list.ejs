@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Canchas</h1>
+            <% if (user && user.rol === 'admin') { %>
+                <a href="/canchas/nueva" class="btn btn-success">+ Nueva Cancha</a>
+            <% } %>
+        </div>
+
+        <% if (flash && flash.success) { %>
+            <div class="flash success"><%= flash.success %></div>
+        <% } %>
+        <% if (flash && flash.error) { %>
+            <div class="flash error"><%= flash.error %></div>
+        <% } %>
+
+        <div class="canchas-grid">
+            <% canchas.forEach(function(c) { %>
+            <div class="cancha-card">
+                <h3><%= c.nombre %></h3>
+                <div class="detail">
+                    <span>Tipo:</span>
+                    <span><%= (c.tipoCancha) ? c.tipoCancha.nombre : 'N/A' %></span>
+                </div>
+                <div class="detail">
+                    <span>Precio/hora:</span>
+                    <span>Bs. <%= c.precio_por_hora %></span>
+                </div>
+                <div class="detail">
+                    <span>Estado:</span>
+                    <span style="color: <%= c.estado === 'Activa' ? 'var(--accent)' : 'var(--danger)' %>">
+                        <%= c.estado %>
+                    </span>
+                </div>
+                <div class="actions">
+                    <a href="/canchas/<%= c.id %>" class="btn btn-outline" style="font-size:0.8rem; padding:0.35rem 0.65rem;">Ver</a>
+                    <a href="/reservas/nueva?cancha=<%= c.id %>" class="btn btn-success" style="font-size:0.8rem; padding:0.35rem 0.65rem;">Reservar</a>
+                    <% if (user && user.rol === 'admin') { %>
+                        <a href="/canchas/<%= c.id %>/editar" class="btn btn-outline" style="font-size:0.8rem; padding:0.35rem 0.65rem;">Editar</a>
+                        <a href="/canchas/<%= c.id %>/eliminar" class="btn btn-danger" style="font-size:0.8rem; padding:0.35rem 0.65rem;"
+                           onclick="return confirm('Eliminar esta cancha?');">Eliminar</a>
+                    <% } %>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+
+        <% if (canchas.length === 0) { %>
+            <div class="card" style="text-align:center; padding:3rem;">
+                <p style="color:var(--text-muted);">No hay canchas registradas.</p>
+                <% if (user && user.rol === 'admin') { %>
+                    <a href="/canchas/nueva" class="btn btn-success" style="margin-top:0.75rem;">Crear Primera Cancha</a>
+                <% } %>
+            </div>
+        <% } %>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

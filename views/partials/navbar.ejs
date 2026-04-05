@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <a href="/dashboard" class="navbar-brand">⚽ Fútbol App</a>
+  <div class="navbar-links">
+    <a href="/dashboard" class="<%= currentPath === '/dashboard' ? 'active' : '' %>">Dashboard</a>
+    <a href="/canchas" class="<%= currentPath.startsWith('/canchas') ? 'active' : '' %>">Canchas</a>
+    <a href="/reservas" class="<%= currentPath.startsWith('/reservas') ? 'active' : '' %>">Reservas</a>
+    <% if (user && user.rol === 'admin') { %>
+      <a href="/horarios" class="<%= currentPath.startsWith('/horarios') ? 'active' : '' %>">Horarios</a>
+      <a href="/tipoCancha" class="<%= currentPath.startsWith('/tipoCancha') ? 'active' : '' %>">Tipos de Cancha</a>
+      <a href="/personas" class="<%= currentPath.startsWith('/personas') ? 'active' : '' %>">Usuarios</a>
+    <% } %>
+  </div>
+  <% if (user) { %>
+    <div class="navbar-user">
+      <span><%= user.nombre %></span>
+      <span class="badge"><%= user.rol %></span>
+      <form action="/auth/logout" method="POST" style="display:inline;">
+        <button type="submit" class="btn-logout">Salir</button>
+      </form>
+    </div>
+  <% } %>
+</nav>

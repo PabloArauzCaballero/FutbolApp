@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Gestionar Usuarios</h1>
+            <a href="/personas/nueva" class="btn btn-success">+ Nuevo Usuario</a>
+        </div>
+
+        <% if (flash && flash.success) { %>
+            <div class="flash success"><%= flash.success %></div>
+        <% } %>
+        <% if (flash && flash.error) { %>
+            <div class="flash error"><%= flash.error %></div>
+        <% } %>
+
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% personas.forEach(function(p) { %>
+                        <tr>
+                            <td><%= p.id %></td>
+                            <td><%= p.nombre %></td>
+                            <td><%= p.email %></td>
+                            <td>
+                                <span class="badge" style="background: <%= p.rol === 'admin' ? '#3b82f6' : 'var(--accent)' %>; color:#000; padding:2px 8px; border-radius:999px; font-size:0.75rem;">
+                                    <%= p.rol %>
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/personas/<%= p.id %>/editar" class="btn btn-outline" style="padding:0.2rem 0.5rem; font-size:0.8rem;">Editar</a>
+                                <a href="/personas/<%= p.id %>/eliminar" class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.8rem;"
+                                   onclick="return confirm('Eliminar este usuario?');">Eliminar</a>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <% if (personas.length === 0) { %>
+                <p style="text-align:center; padding:2rem; color:var(--text-muted);">No hay usuarios registrados.</p>
+            <% } %>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

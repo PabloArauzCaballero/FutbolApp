@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1><%= isEdit ? 'Editar Cancha' : 'Nueva Cancha' %></h1>
+            <a href="/canchas" class="btn btn-outline">Volver</a>
+        </div>
+
+        <% if (error) { %>
+            <div class="flash error"><%= error %></div>
+        <% } %>
+
+        <div class="card" style="max-width:500px;">
+            <form method="POST" action="<%= isEdit ? '/canchas/' + cancha.id + '/editar' : '/canchas/nueva' %>">
+                <div class="form-group">
+                    <label for="nombre">Nombre de la Cancha</label>
+                    <input type="text" id="nombre" name="nombre" required
+                           value="<%= cancha ? cancha.nombre : '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="tipo_id">Tipo de Cancha</label>
+                    <select id="tipo_id" name="tipo_id" required>
+                        <option value="">Seleccionar...</option>
+                        <% tipos.forEach(function(t) { %>
+                            <option value="<%= t.id %>" <%= cancha && cancha.tipo_id == t.id ? 'selected' : '' %>>
+                                <%= t.nombre %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="precio_por_hora">Precio por Hora (Bs.)</label>
+                    <input type="number" step="0.01" id="precio_por_hora" name="precio_por_hora" required
+                           value="<%= cancha ? cancha.precio_por_hora : '0.00' %>">
+                </div>
+                <div class="form-group">
+                    <label for="estado">Estado</label>
+                    <select id="estado" name="estado">
+                        <option value="Activa" <%= cancha && cancha.estado === 'Activa' ? 'selected' : '' %>>Activa</option>
+                        <option value="Inactiva" <%= cancha && cancha.estado === 'Inactiva' ? 'selected' : '' %>>Inactiva</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success" style="width:100%;">
+                    <%= isEdit ? 'Actualizar' : 'Crear' %> Cancha
+                </button>
+            </form>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

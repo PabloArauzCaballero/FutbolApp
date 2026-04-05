@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1><%= isEdit ? 'Editar Tipo de Cancha' : 'Nuevo Tipo de Cancha' %></h1>
+            <a href="/tipoCancha" class="btn btn-outline">Volver</a>
+        </div>
+
+        <% if (error) { %>
+            <div class="flash error"><%= error %></div>
+        <% } %>
+
+        <div class="card" style="max-width:500px;">
+            <form method="POST" action="<%= isEdit ? '/tipoCancha/' + tipo.id + '/editar' : '/tipoCancha/nueva' %>">
+                <div class="form-group">
+                    <label for="nombre">Nombre del Tipo</label>
+                    <input type="text" id="nombre" name="nombre" required
+                           value="<%= tipo ? tipo.nombre : '' %>">
+                </div>
+                <button type="submit" class="btn btn-success" style="width:100%;">
+                    <%= isEdit ? 'Actualizar' : 'Crear' %> Tipo
+                </button>
+            </form>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Dashboard</h1>
+            <p style="color: var(--text-muted);">Bienvenido, <%= user.nombre %></p>
+        </div>
+
+        <% if (flash && flash.success) { %>
+            <div class="flash success"><%= flash.success %></div>
+        <% } %>
+        <% if (flash && flash.error) { %>
+            <div class="flash error"><%= flash.error %></div>
+        <% } %>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.canchas %></div>
+                <div class="stat-label">Canchas Disponibles</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.misReservas %></div>
+                <div class="stat-label">Mis Reservas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.resenas %></div>
+                <div class="stat-label">Reseñas</div>
+            </div>
+            <% if (user.rol === 'admin') { %>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.usuarios %></div>
+                <div class="stat-label">Usuarios Registrados</div>
+            </div>
+            <% } %>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Acciones Rápidas</h2>
+            </div>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <a href="/canchas" class="btn btn-outline">Ver Canchas</a>
+                <a href="/reservas" class="btn btn-outline"><%= user.rol === 'admin' ? 'Ver Reservas' : 'Mis Reservas' %></a>
+                <a href="/reservas/nueva" class="btn btn-success">Nueva Reserva</a>
+                <a href="/resenas" class="btn btn-outline">Ver Reseñas</a>
+                <% if (user.rol === 'admin') { %>
+                    <a href="/horarios" class="btn btn-outline">Gestionar Horarios</a>
+                    <a href="/tipoCancha" class="btn btn-outline">Tipos de Cancha</a>
+                    <a href="/personas" class="btn btn-outline">Usuarios</a>
+                <% } else { %>
+                    <a href="/resenas/nueva" class="btn btn-outline">Dejar Reseña</a>
+                <% } %>
+            </div>
+        </div>
+
+        <% if (ultimasReservas && ultimasReservas.length > 0) { %>
+        <div class="card">
+            <div class="card-header">
+                <h2><%= user.rol === 'admin' ? 'Últimas Reservas del Sistema' : 'Mis Últimas Reservas' %></h2>
+                <a href="/reservas" class="btn btn-outline" style="font-size:0.8rem;">Ver todas</a>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cancha</th>
+                            <th>Fecha</th>
+                            <th>Horario</th>
+                            <th>Estado</th>
+                            <% if (user.rol === 'admin') { %>
+                            <th>Cliente</th>
+                            <% } %>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% ultimasReservas.forEach(function(r) { %>
+                        <tr>
+                            <td><%= (r.horario && r.horario.cancha) ? r.horario.cancha.nombre : 'N/A' %></td>
+                            <td><%= (r.horario) ? r.horario.fecha : 'N/A' %></td>
+                            <td><%= (r.horario) ? r.horario.hora_inicio + ' - ' + r.horario.hora_fin : 'N/A' %></td>
+                            <td>
+                                <span class="badge" style="background: <%= r.estado === 'Confirmada' ? 'var(--accent)' : 'var(--danger)' %>; color:#000; padding:2px 8px; border-radius:999px; font-size:0.75rem;">
+                                    <%= r.estado %>
+                                </span>
+                            </td>
+                            <% if (user.rol === 'admin') { %>
+                            <td><%= r.persona ? r.persona.nombre : 'N/A' %></td>
+                            <% } %>
+                            <td>
+                                <% if (r.estado === 'Confirmada') { %>
+                                    <a href="/reservas/<%= r.id %>/cancelar" 
+                                       onclick="return confirm('Cancelar esta reserva?');" 
+                                       class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.8rem;">Cancelar</a>
+                                <% } else { %>
+                                    &mdash;
+                                <% } %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <% } %>
+    </main>
+    <%- include('partials/footer') %>
+</body>
+</html>

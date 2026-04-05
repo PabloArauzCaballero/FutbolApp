@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Mis Reservas</h1>
+            <a href="/reservas/nueva" class="btn btn-success">+ Nueva Reserva</a>
+        </div>
+
+        <% if (flash && flash.success) { %>
+            <div class="flash success"><%= flash.success %></div>
+        <% } %>
+
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cancha</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% reservas.forEach(function(r) { %>
+                        <tr>
+                            <td><%= r.id %></td>
+                            <td><%= (r.horario && r.horario.cancha) ? r.horario.cancha.nombre : 'N/A' %></td>
+                            <td><%= (r.horario) ? r.horario.fecha : 'N/A' %></td>
+                            <td><%= (r.horario) ? r.horario.hora_inicio + ' - ' + r.horario.hora_fin : 'N/A' %></td>
+                            <td>
+                                <span style="color: <%= r.estado === 'Confirmada' ? 'var(--accent)' : 'var(--danger)' %>">
+                                    <%= r.estado %>
+                                </span>
+                            </td>
+                            <td>
+                                <% if (r.estado === 'Confirmada') { %>
+                                    <a href="/reservas/<%= r.id %>/cancelar" class="btn btn-danger" 
+                                       style="padding:0.2rem 0.5rem; font-size:0.8rem;"
+                                       onclick="return confirm('Cancelar reserva?');">Cancelar</a>
+                                <% } else { %>
+                                    <span style="color:var(--text-muted)">—</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <% if (reservas.length === 0) { %>
+                <p style="text-align:center; padding:2rem; color:var(--text-muted);">No tienes reservas aún.</p>
+                <div style="text-align:center;">
+                    <a href="/reservas/nueva" class="btn btn-success">Crear Primera Reserva</a>
+                </div>
+            <% } %>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

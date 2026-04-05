@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Detalle de Reserva #<%= reserva.id %></h1>
+            <a href="/reservas" class="btn btn-outline">Volver a mis reservas</a>
+        </div>
+
+        <div class="card">
+            <div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.875rem;">Estado</label>
+                    <p style="margin:0; font-size:1.25rem; font-weight:600; color: <%= reserva.estado === 'Confirmada' ? 'var(--accent)' : 'var(--danger)' %>">
+                        <%= reserva.estado %>
+                    </p>
+                </div>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.875rem;">Cancha</label>
+                    <p style="margin:0; font-size:1.25rem; font-weight:600;">
+                        <%= reserva.horario && reserva.horario.cancha ? reserva.horario.cancha.nombre : 'N/A' %>
+                    </p>
+                </div>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.875rem;">Fecha</label>
+                    <p style="margin:0; font-size:1.25rem; font-weight:600;">
+                        <%= reserva.horario ? reserva.horario.fecha : 'N/A' %>
+                    </p>
+                </div>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.875rem;">Horario</label>
+                    <p style="margin:0; font-size:1.25rem; font-weight:600;">
+                        <%= reserva.horario ? reserva.horario.hora_inicio + ' - ' + reserva.horario.hora_fin : 'N/A' %>
+                    </p>
+                </div>
+                <% if (user.rol === 'admin') { %>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.875rem;">Cliente</label>
+                    <p style="margin:0; font-size:1.25rem; font-weight:600;">
+                        <%= reserva.usuario ? reserva.usuario.nombre : 'N/A' %>
+                    </p>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1rem;">
+            <% if (reserva.estado === 'Confirmada') { %>
+                <a href="/reservas/<%= reserva.id %>/cancelar" class="btn btn-danger"
+                   onclick="return confirm('Cancelar esta reserva?');">Cancelar Reserva</a>
+            <% } %>
+            <% if (user.rol === 'admin') { %>
+                <a href="/reservas/<%= reserva.id %>/editar" class="btn btn-outline">Editar Estado</a>
+            <% } %>
+            <a href="/resenas/nueva?cancha=<%= reserva.horario && reserva.horario.cancha ? reserva.horario.cancha.id : '' %>" class="btn btn-success">Dejar Reseña</a>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

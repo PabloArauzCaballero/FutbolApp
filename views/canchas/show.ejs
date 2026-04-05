@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1><%= cancha.nombre %></h1>
+            <a href="/canchas" class="btn btn-outline">Volver</a>
+        </div>
+
+        <div class="card" style="max-width:500px;">
+            <div class="detail" style="margin-bottom:0.5rem;">
+                <span>Tipo:</span>
+                <span><%= (cancha.tipoCancha) ? cancha.tipoCancha.nombre : 'N/A' %></span>
+            </div>
+            <div class="detail" style="margin-bottom:0.5rem;">
+                <span>Precio/hora:</span>
+                <span>Bs. <%= cancha.precio_por_hora %></span>
+            </div>
+            <div class="detail" style="margin-bottom:0.5rem;">
+                <span>Estado:</span>
+                <span style="color: <%= cancha.estado === 'Activa' ? 'var(--accent)' : 'var(--danger)' %>">
+                    <%= cancha.estado %>
+                </span>
+            </div>
+        </div>
+
+        <a href="/reservas/nueva?cancha=<%= cancha.id %>" class="btn btn-success">Reservar esta Cancha</a>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

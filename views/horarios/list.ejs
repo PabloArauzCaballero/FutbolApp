@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Horarios</h1>
+            <% if (user && user.rol === 'admin') { %>
+                <a href="/horarios/nuevo" class="btn btn-success">+ Nuevo Horario</a>
+            <% } %>
+        </div>
+
+        <% if (flash && flash.success) { %>
+            <div class="flash success"><%= flash.success %></div>
+        <% } %>
+
+        <div class="card">
+            <form method="GET" action="/horarios" style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1rem;">
+                <div class="form-group" style="margin:0; flex:1; min-width:150px;">
+                    <label for="cancha_id">Filtrar por cancha</label>
+                    <select name="cancha_id" id="cancha_id">
+                        <option value="">Todas</option>
+                        <% canchas.forEach(function(c) { %>
+                            <option value="<%= c.id %>" <%= filters.cancha_id == c.id ? 'selected' : '' %>><%= c.nombre %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group" style="margin:0; flex:1; min-width:150px;">
+                    <label for="fecha">Fecha</label>
+                    <input type="date" name="fecha" id="fecha" value="<%= filters.fecha || '' %>">
+                </div>
+                <div style="display:flex; align-items:flex-end;">
+                    <button type="submit" class="btn btn-outline">Filtrar</button>
+                </div>
+            </form>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cancha</th>
+                            <th>Fecha</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Disponible</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% horarios.forEach(function(h) { %>
+                        <tr>
+                            <td><%= h.id %></td>
+                            <td><%= (h.cancha) ? h.cancha.nombre : 'N/A' %></td>
+                            <td><%= h.fecha %></td>
+                            <td><%= h.hora_inicio %></td>
+                            <td><%= h.hora_fin %></td>
+                            <td><%= h.disponible ? 'Si' : 'No' %></td>
+                            <td>
+                                <% if (user && user.rol === 'admin') { %>
+                                    <a href="/horarios/<%= h.id %>/editar" class="btn btn-outline" style="padding:0.2rem 0.5rem; font-size:0.8rem;">Editar</a>
+                                    <a href="/horarios/<%= h.id %>/eliminar" class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.8rem;"
+                                       onclick="return confirm('Eliminar este horario?');">Eliminar</a>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <% if (horarios.length === 0) { %>
+                <p style="text-align:center; padding:2rem; color:var(--text-muted);">No hay horarios registrados.</p>
+            <% } %>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>
