@@ -148,21 +148,17 @@ async function enlistar(payload = {}) {
             offset,
             limit,
             order: [["id", "ASC"]],
-            // include: [{
-            //     model: Horario,
-            //     as: "horario",
-            //     include: [{
-            //         model: Cancha,
-            //         as: "cancha",
-            //         include: [{
-            //             model: require("../tipoCancha/tipoCancha.model")(sequelize),
-            //             as: "tipoCancha",
-            //         }],
-            //     }],
-            // }, {
-            //     model: Usuario,
-            //     as: "usuario",
-            // }],
+            include: [{
+                model: Horario,
+                as: "horario",
+                include: [{
+                    model: Cancha,
+                    as: "cancha",
+                }],
+            }, {
+                model: Usuario,
+                as: "usuario",
+            }],
         });
 
         const result = rows.map((row) => row.toJSON());

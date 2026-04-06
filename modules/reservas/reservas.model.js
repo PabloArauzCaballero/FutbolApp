@@ -1,6 +1,10 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
+    if (sequelize.models.Reserva) {
+        return sequelize.models.Reserva;
+    }
+
     const model = sequelize.define(
         "Reserva",
         {

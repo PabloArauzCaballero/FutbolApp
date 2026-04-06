@@ -141,14 +141,10 @@ async function enlistar(payload = {}) {
             limit,
             where,
             order: [["id", "ASC"]],
-            // include: [{
-            //     model: Cancha,
-            //     as: "cancha",
-            //     include: [{
-            //         model: require("../tipoCancha/tipoCancha.model")(sequelize),
-            //         as: "tipoCancha",
-            //     }],
-            // }],
+            include: [{
+                model: Cancha,
+                as: "cancha",
+            }],
         });
 
         const result = rows.map((row) => row.toJSON());

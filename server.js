@@ -16,6 +16,7 @@ const sequelize = require("./core/config/db.config");
 
 const baseLogger = require("./logs/logger");
 const logger = baseLogger.child({ module: "server" });
+const { seedDatabase } = require("./core/config/seed");
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -161,6 +162,8 @@ async function startServer() {
     logServerStartAttempt();
 
     await sequelize.initDatabase();
+
+    await seedDatabase();
 
     server = http.createServer(app);
 

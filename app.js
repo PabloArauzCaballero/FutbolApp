@@ -9,6 +9,7 @@ const compression = require("compression");
 const logger = require("./logs/logger");
 const modules = require("./modules");
 const routes = require("./routes");
+const { notFoundHandler, errorHandler } = require("./middleware");
 
 const app = express();
 
@@ -29,13 +30,6 @@ function normalizeBasePath(basePath) {
 app.disable("x-powered-by");
 
 app.use(
-    pinoHttp({
-        logger,
-        genReqId: (req) => req.headers["x-request-id"] || Date.now().toString(),
-    })
-);
-
-app.use(
     helmet({
         contentSecurityPolicy: {
             directives: {
@@ -47,6 +41,13 @@ app.use(
                 connectSrc: ["'self'"],
             },
         },
+    })
+);
+
+app.use(
+    pinoHttp({
+        logger,
+        genReqId: (req) => req.headers["x-request-id"] || Date.now().toString(),
     })
 );
 
@@ -94,6 +95,23 @@ app.use((req, res, next) => {
     next();
 });
 
+const { checkUser, authorizeRoles } = require('./middleware');
+
+// RUTAS DE ADMIN - Solo rol 'admin' puede acceder
+app.use('/tipoCancha', checkUser, authorizeRoles('admin'));
+app.use('/personas', checkUser, authorizeRoles('admin'));
+app.use('/horarios/nuevo', checkUser, authorizeRoles('admin'));
+
+// RUTAS DE CLIENTE - Cualquier usuario autenticado
+app.use('/reservas/nueva', checkUser);
+app.use('/resenas/nueva', checkUser);
+
+// Nota: Rutas públicas (sin protección):
+// - GET /canchas (listado)
+// - GET /canchas/:id (detalle)
+// - GET /resenas (listado de reseñas)
+// - /auth/* (login, register)
+
 // ==================== Views Router (SSR - EJS Puro) ====================
 app.use("/", routes);
 
@@ -102,11 +120,6 @@ app.get("/health", (_req, res) => {
         ok: true,
         message: "Servidor funcionando correctamente",
     });
-});
-
-app.use((req, _res, next) => {
-    req.log.info({ method: req.method, url: req.originalUrl }, "REQUEST HIT");
-    next();
 });
 
 for (const moduleEntry of modules) {
@@ -120,5 +133,11 @@ for (const moduleEntry of modules) {
     logger.info({ mountPath: `/api${basePath}` }, "MODULE MOUNTED");
     app.use(`/api${basePath}`, moduleEntry.router);
 }
+
+// 404 handler for undefined routes
+app.use(notFoundHandler);
+
+// Global error handler
+app.use(errorHandler);
 
 module.exports = app;

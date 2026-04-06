@@ -1,6 +1,10 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
+    if (sequelize.models.Resena) {
+        return sequelize.models.Resena;
+    }
+
     const model = sequelize.define(
         "Resena",
         {

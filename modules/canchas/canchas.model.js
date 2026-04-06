@@ -1,6 +1,10 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
+    if (sequelize.models.Cancha) {
+        return sequelize.models.Cancha;
+    }
+
     const model = sequelize.define(
         "Cancha",
         {

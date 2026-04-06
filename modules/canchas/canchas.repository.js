@@ -135,11 +135,10 @@ async function enlistar(payload = {}) {
             offset,
             limit,
             order: [["id", "ASC"]],
-            // TODO: Fix associations - include disabled temporarily
-            // include: [{
-            //     model: TipoCancha,
-            //     as: "tipoCancha",
-            // }],
+            include: [{
+                model: TipoCancha,
+                as: "tipoCancha",
+            }],
         });
 
         const result = rows.map((row) => row.toJSON());

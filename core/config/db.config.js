@@ -21,17 +21,20 @@ const sequelize = new Sequelize({
     logging: false,
 });
 
+// Modelos (se inicializan en setupAssociations)
+let Usuario, TipoCancha, Cancha, Horario, Reserva, Resena;
+
 /**
  * Set up Sequelize associations between all models.
  * This is called during initDatabase() after authenticate().
  */
 function setupAssociations() {
-    const Usuario = require("../../modules/personas/personas.model")(sequelize);
-    const TipoCancha = require("../../modules/tipoCancha/tipoCancha.model")(sequelize);
-    const Cancha = require("../../modules/canchas/canchas.model")(sequelize);
-    const Horario = require("../../modules/horarios/horarios.model")(sequelize);
-    const Reserva = require("../../modules/reservas/reservas.model")(sequelize);
-    const Resena = require("../../modules/resenas/resenas.model")(sequelize);
+    Usuario = require("../../modules/personas/personas.model")(sequelize);
+    TipoCancha = require("../../modules/tipoCancha/tipoCancha.model")(sequelize);
+    Cancha = require("../../modules/canchas/canchas.model")(sequelize);
+    Horario = require("../../modules/horarios/horarios.model")(sequelize);
+    Reserva = require("../../modules/reservas/reservas.model")(sequelize);
+    Resena = require("../../modules/resenas/resenas.model")(sequelize);
 
     // TipoCancha 1:N Cancha
     Cancha.belongsTo(TipoCancha, { foreignKey: "tipo_id", as: "tipoCancha" });
@@ -75,4 +78,5 @@ module.exports = {
     sequelize,
     Sequelize,
     initDatabase,
+    getModels: () => ({ Usuario, TipoCancha, Cancha, Horario, Reserva, Resena })
 };

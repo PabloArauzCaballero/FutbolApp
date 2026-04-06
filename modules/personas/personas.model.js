@@ -1,6 +1,10 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
+    if (sequelize.models.Usuario) {
+        return sequelize.models.Usuario;
+    }
+
     const model = sequelize.define(
         "Usuario",
         {

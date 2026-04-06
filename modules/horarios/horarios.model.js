@@ -1,6 +1,10 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
+    if (sequelize.models.Horario) {
+        return sequelize.models.Horario;
+    }
+
     const model = sequelize.define(
         "Horario",
         {
